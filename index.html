@@ -1,477 +1,473 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventos Elegance</title>
-
-    <link rel="stylesheet" href="eventos.css">
-    <link rel="stylesheet" href="ia.css">
-
-    <!-- Iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
-<body>
-
-    <div id="particulas"></div>
-
-    <div class="contenedor">
-        
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Velvet Studio: diseño y organización de momentos extraordinarios. Prototipo interactivo de eventos en Bogotá."
+    />
+    <title>Velvet Studio · Momentos que se quedan</title>
+    <link rel="stylesheet" href="eventos.css" />
+    <script defer src="demo.js"></script>
+    <script defer src="eventos.js"></script>
+  </head>
+  <body>
+    <div class="demo-bar">
+      UN ESTUDIO DE MOMENTOS EXTRAORDINARIOS
+      <span>Experiencia demo · datos y pagos simulados</span>
     </div>
-
-
-
-<header>
-
-    <!-- ======================================
-        VELVET IA
-====================================== -->
-
-<div class="ia-boton" id="abrirIA">
-    <img src="ia.png" alt="Velvet IA">
-    <span>Velvet IA</span>
-</div>
-
-
-<div class="ia-chat" id="iaChat">
-
-    <!-- ENCABEZADO -->
-
-    <div class="ia-header">
-
-        <div class="ia-titulo">
-
-            <div class="ia-icono">
-                <img src="ia.png" alt="Velvet IA">
-            </div>
-
-            <div>
-                <h3>Velvet IA</h3>
-                <span>Asistente virtual</span>
-            </div>
-
+    <header class="site-header">
+      <a class="brand" href="index.html">velvet<span>STUDIO · EVENTOS</span></a
+      ><button
+        class="icon mobile-toggle"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+      <nav id="navigation">
+        <a href="#experiencias">Experiencias</a
+        ><a href="#galeria">Inspiración</a><a href="#paquetes">Paquetes</a
+        ><a href="#personaliza">Diseña tu evento</a
+        ><a href="#contacto">Contacto</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon theme-toggle" aria-label="Cambiar tema">◐</button
+        ><a class="account-link" href="cuenta.html">Mi cuenta ↗</a>
+      </div>
+    </header>
+    <main>
+      <section class="hero" id="inicio">
+        <video
+          id="heroVideo"
+          autoplay
+          muted
+          loop
+          playsinline
+          poster="imagen1.png"
+          aria-label="Montaje de una celebración Velvet"
+          src="assets/eventos.mp4"
+        ></video>
+        <div class="hero-shade"></div>
+        <div class="hero-copy">
+          <p class="eyebrow light">BOGOTÁ Y ALREDEDORES · EVENTOS CON ALMA</p>
+          <h1>Hay momentos<br />que merecen<br /><em>ser inolvidables.</em></h1>
+          <p>
+            Tú imaginas el motivo. Nosotros diseñamos la magia.<br />Celebraciones
+            tan únicas como tu historia.
+          </p>
+          <div class="button-row">
+            <a class="button ivory" href="#personaliza"
+              >Diseña tu celebración <span>↗</span></a
+            ><button class="button glass" data-chat>
+              Hablemos por WhatsApp ↗
+            </button>
+          </div>
+          <div class="hero-proof">
+            <span>★★★★★</span> Más de 120 historias celebradas <i>·</i> Una
+            sola, la tuya.
+          </div>
         </div>
-
-        <button id="cerrarIA" aria-label="Cerrar Velvet IA">
-            <i class="fa-solid fa-xmark"></i>
+        <div class="hero-bottom">
+          <span>01 / EL ARTE DE CELEBRAR</span
+          ><button class="video-toggle">Pausar video Ⅱ</button
+          ><a href="#experiencias">DESCUBRE MÁS ↓</a>
+        </div>
+      </section>
+      <div class="ticker">
+        <span>DISEÑAMOS EMOCIONES</span><b>✦</b><span>CELEBRAMOS HISTORIAS</span
+        ><b>✦</b><span>CUIDAMOS CADA DETALLE</span><b>✦</b
+        ><span>CREAMOS RECUERDOS</span>
+      </div>
+      <section class="section" id="experiencias">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">01 / UNA OCASIÓN, MIL POSIBILIDADES</p>
+            <h2>Tu motivo.<br /><em>Nuestra inspiración.</em></h2>
+          </div>
+          <p>
+            De un pequeño gran sí a una fiesta que lo cambia todo. Encuentra tu
+            celebración y hagámosla tuya.
+          </p>
+        </div>
+        <div
+          class="category-tabs"
+          id="categoryTabs"
+          role="group"
+          aria-label="Filtrar experiencias"
+        ></div>
+        <div class="experience-grid" id="experienceGrid"></div>
+        <button class="text-button" id="showAll">
+          Explorar todas las celebraciones ↓
         </button>
-
-    </div>
-
-
-    <!-- MENSAJES -->
-
-    <div class="ia-mensajes" id="iaMensajes">
-
-        <div class="ia-mensaje bot">
-
-            <div class="ia-avatar">
-                <img src="ia.png" alt="Velvet IA">
-            </div>
-
-            <div class="ia-burbuja">
-                ¡Hola! 💜 Soy Velvet IA.
-                Pregúntame lo que quieras sobre Velvet Studio.
-            </div>
-
+      </section>
+      <section class="feature-band">
+        <div>
+          <p class="eyebrow">LA SELECCIÓN VELVET</p>
+          <h2>Pequeños detalles.<br /><em>Grandes historias.</em></h2>
+          <p>
+            Bodas campestres, quince años de ensueño y encuentros empresariales
+            que conectan. Nuestros eventos destacados tienen algo en común: se
+            sienten tuyos.
+          </p>
+          <a class="text-button" href="#galeria"
+            >Entra a nuestra colección ↗</a
+          >
         </div>
-
-    </div>
-
-
-    <!-- ESCRIBIR -->
-
-    <div class="ia-escribir">
-
-        <input
-            type="text"
-            id="iaInput"
-            placeholder="Escribe tu pregunta..."
-            autocomplete="off"
-        >
-
-        <button id="iaEnviar" aria-label="Enviar mensaje">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
-
-    </div>
-
-</div>
-
-<nav>
-
-<div class="logo">
-<i class="fa-solid fa-champagne-glasses"></i>
-
-VELVET STUDIO
-
-</div>
-
-<ul>
-
-<li><a href="#inicio">Inicio</a></li>
-
-<li><a href="#servicios">Servicios</a></li>
-
-<li><a href="#galeria">Galería</a></li>
-
-<li><a href="#eventos">Eventos</a></li>
-
-<li><a href="#ubicacion">Ubicación</a></li>
-
-<li><a href="#contacto">Contacto</a></li>
-
-<li><a href="admin.html">Administrador</a></li>
-
-</ul>
-
-</nav>
-
-</header>
-
-
-
-<section class="slider" id="inicio">
-
-<div class="slides">
-
-<img class="active"
-src="imagen1.png">
-
-<img
-src="imagen5.png">
-
-<img
-src="imagen3.png">
-
-</div>
-
-<div class="texto-slider">
-
-<h1>Organizamos tus mejores momentos</h1>
-
-<p>
-Bodas, cumpleaños, eventos empresariales,
-graduaciones y mucho más.
-</p>
-
-<a href="#contacto" class="boton">
-Solicitar Cotización
-</a>
-
-</div>
-
-</section>
-
-<!--================ NOSOTROS =================-->
-
-<section class="nosotros">
-
-<h2>¿Quiénes Somos?</h2>
-
-<p>
-
-Somos una empresa dedicada a la organización de
-eventos sociales y empresariales.
-
-Nuestro objetivo es convertir cada celebración en
-un recuerdo inolvidable mediante decoración,
-planeación, logística y entretenimiento de alta
-calidad.
-
-</p>
-
-</section>
-
-<!--================ SERVICIOS =================-->
-
-<section id="servicios">
-
-<h2>Nuestros Servicios</h2>
-
-<div class="contenedor">
-
-<div class="card">
-
-<i class="fa-solid fa-ring"></i>
-
-<h3>Bodas</h3>
-
-<p>
-
-Decoración elegante,
-fotografía,
-video,
-música y catering.
-
-</p>
-
-</div>
-
-<div class="card">
-
-<i class="fa-solid fa-cake-candles"></i>
-
-<h3>Cumpleaños</h3>
-
-<p>
-
-Temáticas personalizadas,
-animación y decoración.
-
-</p>
-
-</div>
-
-<div class="card">
-
-<i class="fa-solid fa-building"></i>
-
-<h3>Empresariales</h3>
-
-<p>
-
-Congresos,
-reuniones,
-lanzamientos
-y conferencias.
-
-</p>
-
-</div>
-
-<div class="card">
-
-<i class="fa-solid fa-user-graduate"></i>
-
-<h3>Graduaciones</h3>
-
-<p>
-
-Fiestas,
-decoración,
-DJ y fotografía profesional.
-
-</p>
-
-</div>
-
-</div>
-
-</section>
-
-<!--================ GALERIA =================-->
-
-<section class="galeria" id="galeria">
-    <h2>Galería</h2>
-    <p>Conoce algunos de nuestros momentos en Velvet Studio</p>
-
-    <div class="galeria-3d">
-
-        <button class="boton-galeria anterior" id="anterior">‹</button>
-
-        <div class="slider-3d">
-
-            <div class="foto-3d">
-                <img src="imagen1.png" alt="Velvet Studio">
-            </div>
-
-            <div class="foto-3d">
-                <img src="imagen2.png" alt="Velvet Studio">
-            </div>
-
-            <div class="foto-3d">
-                <img src="imagen3.png" alt="Velvet Studio">
-            </div>
-
-            <div class="foto-3d">
-                <img src="imagen4.png" alt="Velvet Studio">
-            </div>
-
-            <div class="foto-3d">
-                <img src="imagen5.png" alt="Velvet Studio">
-            </div>
-
-            <div class="foto-3d">
-                <img src="Imagen6.png" alt="Velvet Studio">
-            </div>
-
-            <div class="foto-3d">
-                <img src="imagen7.png" alt="Velvet Studio">
-            </div>
-
+        <img
+          src="boda campestre.png"
+          alt="Montaje de boda campestre con decoración floral"
+          loading="lazy"
+        />
+        <div class="image-label">
+          THE WEDDING EDIT <span>Romance al aire libre</span>
         </div>
-
-        <button class="boton-galeria siguiente" id="siguiente">›</button>
-
-    </div>
-</section>
-
-<!--================ EVENTOS =================-->
-
-<section id="eventos">
-
-<h2>Próximos Eventos</h2>
-
-<table>
-
-<tr>
-
-<th>Fecha</th>
-
-<th>Evento</th>
-
-<th>Lugar</th>
-
-</tr>
-
-<tr>
-
-<td>10 Agosto</td>
-
-<td>Boda Campestre</td>
-
-<td>Bogotá</td>
-
-</tr>
-
-<tr>
-
-<td>20 Agosto</td>
-
-<td>Graduación</td>
-
-<td>Medellín</td>
-
-</tr>
-
-<tr>
-
-<td>30 Agosto</td>
-
-<td>Conferencia Empresarial</td>
-
-<td>Cali</td>
-
-</tr>
-
-<tr>
-
-<td>15 Septiembre</td>
-
-<td>Cumpleaños Infantil</td>
-
-<td>Villavicencio</td>
-
-</tr>
-
-<tr>
-
-<td>25 Septiembre</td>
-
-<td>Cumpleaños 15</td>
-
-<td>San Andres</td>
-
-</tr>
-
-
-</table>
-
-</section>
-
-<!--================ GRAFICA =================-->
-
-<section class="estadisticas">
-
-<h2>Eventos realizados</h2>
-
-<canvas id="grafica"></canvas>
-
-</section>
-
-<!--================ MAPA =================-->
-
-<section id="ubicacion">
-
-<h2>Nuestra Ubicación</h2>
-
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63627.08407336377!2d-74.07139809288613!3d4.648782404558969!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f909e88bf0583%3A0xcee402e0b005bc73!2sChapinero%2C%20Bogot%C3%A1!5e0!3m2!1ses-419!2sco!4v1788388188902!5m2!1ses-419!2sco" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-
-</section>
-
-
-
-
-<!--================ CONTACTO =================-->
-
-<section id="contacto">
-
-<h2>Contáctanos</h2>
-
-<form id="formulario">
-
-<input
-type="text"
-placeholder="Nombre"
-required>
-
-<input
-type="email"
-placeholder="Correo"
-required>
-
-<input
-type="text"
-placeholder="Teléfono">
-
-<textarea
-placeholder="Describe tu evento"
-required></textarea>
-
-<button type="submit">
-
-Enviar Solicitud
-
-</button>
-
-</form>
-
-</section>
-
-<!--================ FOOTER =================-->
-
-<footer>
-
-<h3>Velvet Studio</h3>
-
-<p>
-
-300 123 4567
-
-</p>
-
-<p>
-
-✉ VelvetStudio@events.com
-
-</p>
-
-<p>
-
-© 2026 Todos los derechos reservados
-
-</p>
-
-</footer>
-
-<script src="eventos.js"></script>
-<script src="ia.js?v=2"></script>
-
-</body>
+      </section>
+      <section class="section" id="galeria">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">02 / EL MOODBOARD</p>
+            <h2>Un poco de <em>inspiración.</em></h2>
+          </div>
+          <p>
+            Texturas, luces, flores y ambientes. Guarda una idea en tu memoria;
+            nosotros la convertimos en una experiencia.
+          </p>
+        </div>
+        <div class="category-tabs" id="galleryTabs"></div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+      </section>
+      <section class="section packages-section" id="paquetes">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">03 / TODO COMIENZA CON UNA IDEA</p>
+            <h2>Un plan para <em>cada sueño.</em></h2>
+          </div>
+          <p>
+            Valores orientativos en pesos colombianos para 30 invitados.
+            Personaliza la experiencia para conocer tu estimado.
+          </p>
+        </div>
+        <div class="package-grid" id="packageGrid"></div>
+        <div class="promo">
+          <span>✦ UN MOTIVO MÁS PARA CELEBRAR</span>
+          <h3>Tu próxima historia, con un 10% de magia extra.</h3>
+          <p>
+            Aplica <strong>VELVET10</strong> a tu cotización. Promoción de
+            demostración, no acumulable.
+          </p>
+          <a href="#personaliza" class="button">Quiero mi cotización ↗</a>
+        </div>
+      </section>
+      <section class="section planner-section" id="personaliza">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">04 / HECHO A TU MEDIDA</p>
+            <h2>Imagina. Combina.<br /><em>Hagámoslo realidad.</em></h2>
+          </div>
+          <p>
+            Arma tu celebración en unos pasos. El presupuesto se actualiza
+            mientras eliges cada detalle.
+          </p>
+        </div>
+        <div class="planner-layout">
+          <form id="quoteForm" class="panel">
+            <div class="step-title">
+              <span>01</span>
+              <h3>La esencia de tu evento</h3>
+            </div>
+            <div class="form-grid">
+              <label
+                >Celebración<select
+                  name="category"
+                  id="eventCategory"
+                ></select></label
+              ><label
+                >Paquete<select
+                  name="package"
+                  id="eventPackage"
+                ></select></label
+              ><label
+                >Temática<select name="theme">
+                  <option>Jardín encantado</option>
+                  <option>Elegancia clásica</option>
+                  <option>Boho natural</option>
+                  <option>Universo de colores</option>
+                  <option>Minimalista contemporánea</option>
+                  <option>Una idea propia</option>
+                </select></label
+              ><label
+                >Paleta de colores<select name="colors">
+                  <option>Crema, rosa y dorado</option>
+                  <option>Lavanda y plata</option>
+                  <option>Verde salvia y blanco</option>
+                  <option>Azul y dorado</option>
+                  <option>Rosa y melocotón</option>
+                  <option>Colores personalizados</option>
+                </select></label
+              ><label
+                >Decoración<select name="decoration">
+                  <option>Flores y velas</option>
+                  <option>Globos y fondos temáticos</option>
+                  <option>Montaje natural</option>
+                  <option>Escenario contemporáneo</option>
+                </select></label
+              ><label
+                >Invitados<input
+                  name="guests"
+                  type="number"
+                  min="10"
+                  max="1000"
+                  value="30"
+                  required /></label
+              ><label
+                >Presupuesto que tienes en mente (COP)<input
+                  name="budget"
+                  type="number"
+                  min="0"
+                  step="50000"
+                  placeholder="Ej. 5000000" /></label
+              ><label
+                >Código de promoción<input name="promo" placeholder="VELVET10"
+              /></label>
+            </div>
+            <div class="step-title">
+              <span>02</span>
+              <h3>Detalles que suman</h3>
+            </div>
+            <div id="extrasList" class="extras-grid"></div>
+            <div class="step-title">
+              <span>03</span>
+              <h3>Una fecha para recordar</h3>
+            </div>
+            <div class="calendar-note">
+              Consulta la disponibilidad por lugar. Los días ocupados se validan
+              al guardar.
+            </div>
+            <div class="calendar" id="quoteCalendar"></div>
+            <div class="form-grid">
+              <label>Fecha<input name="date" type="date" required /></label
+              ><label
+                >Lugar<select name="venue">
+                  <option>Jardín Velvet · Bogotá</option>
+                  <option>Salón Imperial · Bogotá</option>
+                  <option>Hacienda del Sol · Chía</option>
+                  <option>En mi ubicación</option>
+                </select></label
+              ><label
+                >Nombre<input
+                  name="name"
+                  autocomplete="name"
+                  required
+                  minlength="2" /></label
+              ><label
+                >Correo<input
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required /></label
+              ><label
+                >Teléfono<input
+                  name="phone"
+                  type="tel"
+                  pattern="[0-9 +()\-]{7,20}"
+                  required
+                  placeholder="300 000 0000" /></label
+              ><label
+                >Tu idea personalizada<input
+                  name="notes"
+                  maxlength="300"
+                  placeholder="Cuéntanos ese detalle especial"
+              /></label>
+            </div>
+            <p class="form-note" id="availability" aria-live="polite"></p>
+            <div class="button-row">
+              <button type="submit" class="button">Guardar cotización ↗</button
+              ><button type="button" class="button outline" id="reserveNow">
+                Solicitar reserva
+              </button>
+            </div>
+            <p class="form-note">
+              Datos de prueba solamente. Las solicitudes se guardan en este
+              navegador.
+            </p>
+          </form>
+          <aside
+            class="quote-summary panel"
+            id="quoteSummary"
+            aria-live="polite"
+          ></aside>
+        </div>
+      </section>
+      <section class="section" id="servicios">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">05 / EL TOQUE FINAL</p>
+            <h2>Más detalles.<em> Más tú.</em></h2>
+          </div>
+          <p>
+            Invitaciones que emocionan, sorpresas que hablan y recuerdos que
+            duran.
+          </p>
+        </div>
+        <div class="service-grid">
+          <article>
+            <span>✉</span>
+            <h3>Invitaciones digitales</h3>
+            <p>
+              Tu historia, tus colores y todos los detalles de tu celebración.
+            </p>
+            <button class="text-button" id="invitationPreview">
+              Diseñar invitación ↗
+            </button>
+          </article>
+          <article>
+            <span>✧</span>
+            <h3>Sorpresas y regalos</h3>
+            <p>Un montaje íntimo, un regalo inesperado y ese efecto wow.</p>
+            <button class="text-button" data-extra="Sorpresas y regalos">
+              Añadir a mi evento ↗
+            </button>
+          </article>
+          <article>
+            <span>◎</span>
+            <h3>El equipo perfecto</h3>
+            <p>
+              Fotografía, catering, música y coordinación para disfrutar sin
+              preocupaciones.
+            </p>
+            <a class="text-button" href="#personaliza"
+              >Elegir mis servicios ↗</a
+            >
+          </article>
+        </div>
+      </section>
+      <section class="testimonials section">
+        <p class="eyebrow">
+          HISTORIAS QUE NOS HACEN SONREÍR · TESTIMONIOS DEMO
+        </p>
+        <h2>Después de la fiesta,<br /><em>queda lo que sentimos.</em></h2>
+        <div class="review-grid">
+          <blockquote>
+            <span>★★★★★</span>
+            <p>
+              “Entendieron lo que soñábamos y lo hicieron todavía más bonito.
+              Volveríamos a elegirlos mil veces.”
+            </p>
+            <footer>LAURA & ANDRÉS <small>Boda campestre</small></footer>
+          </blockquote>
+          <blockquote>
+            <span>★★★★★</span>
+            <p>
+              “Cada detalle tenía la personalidad de mi hija. Fue una noche que
+              ninguna de las dos va a olvidar.”
+            </p>
+            <footer>VALENTINA M. <small>Quince años</small></footer>
+          </blockquote>
+          <blockquote>
+            <span>★★★★★</span>
+            <p>
+              “Organización impecable, un ambiente increíble y un equipo que
+              pensó en todo.”
+            </p>
+            <footer>CAMILA R. <small>Encuentro empresarial</small></footer>
+          </blockquote>
+        </div>
+      </section>
+      <section class="section contact-section" id="contacto">
+        <div>
+          <p class="eyebrow">06 / TU HISTORIA EMPIEZA AQUÍ</p>
+          <h2>¿Qué vamos<br />a <em>celebrar?</em></h2>
+          <p>Cuéntanos tu idea. Nos encantará darle forma contigo.</p>
+          <button class="button" data-chat>Conversar por WhatsApp ↗</button>
+          <p class="coverage">
+            Bogotá · Chía · Cajicá · La Calera<br />Ubicación de referencia:
+            Chapinero, Bogotá.<br />Atención de demostración: lunes a sábado, 9
+            a. m. – 6 p. m.
+          </p>
+          <div class="button-row">
+            <button class="text-button" data-social="Instagram">
+              Instagram ↗</button
+            ><button class="text-button" data-social="Facebook">
+              Facebook ↗</button
+            ><button class="text-button" data-social="TikTok">TikTok ↗</button>
+          </div>
+        </div>
+        <form id="contactForm" class="panel">
+          <h3>Hablemos de tu idea</h3>
+          <label>Tu nombre<input name="name" required minlength="2" /></label
+          ><label
+            >Correo electrónico<input
+              name="email"
+              type="email"
+              required /></label
+          ><label
+            >Mensaje<textarea
+              name="message"
+              rows="4"
+              required
+              minlength="10"
+            ></textarea></label
+          ><button class="button" type="submit">Enviar mensaje ↗</button>
+          <p class="form-note">
+            Envío simulado. Puedes verlo en el panel de mensajes.
+          </p>
+        </form>
+      </section>
+      <section class="section faq">
+        <p class="eyebrow">ANTES DE COMENZAR</p>
+        <h2>Pequeñas <em>preguntas.</em></h2>
+        <details>
+          <summary>¿Con cuánto tiempo debo reservar?</summary>
+          <p>
+            Sugerimos entre uno y tres meses. Puedes consultar las fechas
+            disponibles en el personalizador.
+          </p>
+        </details>
+        <details>
+          <summary>¿Puedo personalizar cualquier paquete?</summary>
+          <p>
+            Sí. Elige temática, paleta, decoración y servicios adicionales. El
+            valor se actualiza en tu cotización.
+          </p>
+        </details>
+        <details>
+          <summary>¿Cómo funcionan los anticipos?</summary>
+          <p>
+            En esta demostración puedes simular el 30% de anticipo, pagar el
+            total o completar el saldo. No se procesa dinero.
+          </p>
+        </details>
+        <details>
+          <summary>¿Los datos se envían a algún servidor?</summary>
+          <p>
+            No. Todo se almacena en este navegador. Registro, reservas, chat,
+            contacto y pagos son simulaciones locales.
+          </p>
+        </details>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <a class="brand" href="#inicio">velvet<span>STUDIO · EVENTOS</span></a>
+      <p>Creamos el ambiente. Tú creas los recuerdos.</p>
+      <a href="admin.html">Panel administrativo ↗</a
+      ><small
+        >© 2026 Velvet Studio · Prototipo funcional · Sin transacciones
+        reales</small
+      >
+    </footer>
+    <button
+      class="chat-fab"
+      data-chat
+      aria-label="Abrir conversación de demostración"
+    >
+      ✧ <span>Hablemos</span>
+    </button>
+    <dialog id="modal">
+      <button class="modal-close icon" aria-label="Cerrar ventana">×</button>
+      <div id="modalBody"></div>
+    </dialog>
+    <div id="toast" role="status"></div>
+  </body>
 </html>

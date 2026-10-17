@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mi cuenta · Velvet Studio</title>
+    <link rel="stylesheet" href="eventos.css" />
+    <script defer src="demo.js"></script>
+    <script defer src="clientes.js"></script>
+  </head>
+  <body>
+    <div class="demo-bar">
+      VELVET STUDIO <span>Cuenta de demostración · Sin autenticación real</span>
+    </div>
+    <header class="site-header">
+      <a class="brand" href="index.html">velvet<span>STUDIO · EVENTOS</span></a>
+      <div class="header-actions">
+        <a class="text-button" href="index.html#personaliza"
+          >Diseñar un evento ↗</a
+        ><button class="icon theme-toggle" aria-label="Cambiar tema">◐</button>
+      </div>
+    </header>
+    <main class="account-main" id="accountContent"></main>
+    <footer class="site-footer">
+      <p>Tu próxima historia comienza con una idea.</p>
+      <a href="index.html">Volver al estudio ↗</a>
+    </footer>
+    <dialog id="modal">
+      <button class="modal-close icon" aria-label="Cerrar ventana">×</button>
+      <div id="modalBody"></div>
+    </dialog>
+    <div id="toast" role="status"></div>
+  </body>
+</html>
