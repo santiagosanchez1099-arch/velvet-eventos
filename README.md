@@ -20,9 +20,9 @@ Usa el servidor local para que todas las páginas compartan el mismo almacenamie
 2. Abre **Diseña tu evento**. Cambia temática, colores, decoración, invitados y servicios.
 3. Usa **VELVET10** para aplicar el descuento inicial del 10%. Los valores son ilustrativos en COP.
 4. Selecciona fecha y lugar. Para una ubicación propia, escribe su dirección.
-5. Guarda una cotización o solicita una reserva con un nombre, correo y teléfono de prueba.
-6. Entra a **Mi cuenta** con el mismo correo. Confirma la reserva si guardaste una cotización.
-7. Simula un pago rechazado o aprobado, un anticipo del 30% y el pago del saldo. Descarga el comprobante de texto.
+5. Pulsa **Este es mi plan**, revisa el paquete y continúa con la personalización. Guarda una cotización o solicita una reserva con datos de prueba.
+6. Desde la confirmación, pulsa **Simular pago ahora** o **Reservar y simular pago**. También puedes entrar a **Mi cuenta** con el mismo correo para retomar la reserva.
+7. Elige **Nequi**, **Daviplata** o **tarjeta**. Simula un pago rechazado o aprobado, un anticipo del 30% o el saldo. Descarga el comprobante de texto.
 8. Envía un mensaje desde Contacto y respóndelo en **Administración → Mensajes**. La respuesta aparece en la cuenta del cliente.
 9. Cambia paquetes, promociones o fotografías desde el panel y vuelve al sitio para ver los cambios.
 10. En **Administración → Configuración**, restablece los datos para una nueva presentación.
@@ -44,7 +44,7 @@ El panel administrativo está abierto intencionalmente para la demo en `admin.ht
 - Presupuesto dinámico: base para 30 invitados, $35.000 por invitado adicional, servicios y promoción configurable.
 - Calendario por lugar, bloqueo de reservas duplicadas, fecha y ubicación.
 - Cotizaciones, reservas, cancelaciones y consulta de saldos.
-- Checkout con tarjeta ficticia de débito o crédito, resultados aprobado/rechazado y comprobantes descargables.
+- Checkout con Nequi, Daviplata y formulario de tarjeta de crédito/débito; códigos de prueba, cuotas, resultados aprobado/rechazado y comprobantes descargables.
 - Diseñador y vista previa de invitación digital, sorpresas, fotografía, catering y música.
 - Cuenta de cliente con historial de cotizaciones, reservas, pagos y respuestas.
 - Administración de clientes, eventos, reservas, calendario, estados, precios, promociones, pagos y galería.
@@ -82,6 +82,14 @@ Las cotizaciones guardadas conservan sus precios aunque el administrador cambie 
 
 ## Verificación
 
-La aplicación no tiene dependencias de ejecución. La prueba opcional `tools/verify.cjs` requiere Playwright y Chrome instalados, además del servidor local iniciado. Ejecuta `node tools/verify.cjs` y `node tools/verify-admin.cjs`. Si Playwright está en una ruta externa, indica esa ruta en la variable `PLAYWRIGHT_MODULE`. Las capturas se escriben en `qa/` (no versionada).
+La aplicación no tiene dependencias de ejecución. La prueba opcional `tools/verify.cjs` requiere Playwright y Chrome instalados, además del servidor local iniciado. Ejecuta `node tools/verify.cjs`, `node tools/verify-admin.cjs` y `node tools/verify-payments.cjs`. Si Playwright está en una ruta externa, indica esa ruta en la variable `PLAYWRIGHT_MODULE`. Las capturas se escriben en `qa/` (no versionada).
 
 Para regenerar el video, instala `imageio-ffmpeg` en `.runtime/` y ejecuta `python tools/create-video.py`. El MP4 generado ya está incluido; este paso no es necesario para presentar la web.
+
+## Probar los medios de pago
+
+- **Tarjeta:** pulsa **Completar con datos de prueba**. Puedes editar titular, número ficticio, vencimiento, CVV, tipo de tarjeta y cuotas de crédito. Se aceptan únicamente los números ficticios `4242 4242 4242 4242` y `5555 5555 5555 4444`, con vencimiento futuro y CVV de tres dígitos.
+- **Nequi / Daviplata:** pulsa **Usar celular de prueba**, genera el código y escribe `123456`. El código es local y no se envía ningún SMS.
+- Marca la casilla de demostración y confirma. Puedes elegir un resultado rechazado para probar el reintento.
+- Cancelar, cerrar la ventana o pulsar Escape durante el procesamiento cancela la simulación sin registrar pagos.
+- Solo se guardan el importe, la fecha, la referencia y el nombre del método. No se guardan los campos de tarjeta, celular o código. Los movimientos previos y datos existentes se conservan.

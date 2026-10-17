@@ -318,6 +318,8 @@ const Demo = (() => {
   }
   function toast(t) {
     let el = document.getElementById("toast");
+    const dialog = document.getElementById("modal");
+    (dialog?.open ? dialog : document.body).append(el);
     el.textContent = t;
     el.classList.add("visible");
     clearTimeout(toast.timer);
@@ -329,6 +331,8 @@ const Demo = (() => {
   }
   function close() {
     document.getElementById("modal").close();
+    const toastElement = document.getElementById("toast");
+    if (toastElement) document.body.append(toastElement);
   }
   function occupied(date, venue, exclude) {
     return state.quotes.some(
@@ -377,7 +381,7 @@ const Demo = (() => {
   function receipt(p) {
     const q = state.quotes.find((q) => q.id === p.quoteId);
     modal(
-      `<p class="eyebrow">COMPROBANTE DE DEMOSTRACIÓN</p><h2>Pago <em>confirmado.</em></h2><div class="success-mark">✓</div><h3>${money(p.amount)}</h3><p>${esc(p.id)} · ${new Date(p.date).toLocaleString("es-CO")}</p><p>${esc(q?.name)} · ${esc(q?.category)}<br>Reserva ${esc(p.quoteId)}<br>${esc(p.method)}</p><p>Saldo actual: <strong>${money(q.total - q.paid)}</strong></p><p class="form-note">SIMULADO · Sin valor fiscal · No se realizó ningún cobro.</p><button class="button" id="downloadReceipt">Descargar comprobante</button>`,
+      `<p class="eyebrow">COMPROBANTE DE DEMOSTRACIÓN</p><h2>Pago <em>confirmado.</em></h2><div class="success-mark">✓</div><h3>${money(p.amount)}</h3><p>${esc(p.id)} · ${new Date(p.date).toLocaleString("es-CO")}</p><p>${esc(q?.name)} · ${esc(q?.category)}<br>Reserva ${esc(p.quoteId)}<br>${esc(p.method)}</p><p>Saldo actual: <strong>${money(q.total - q.paid)}</strong></p><p class="form-note">SIMULADO · Sin valor fiscal · No se realizó ningún cobro.</p><div class="button-row"><button class="button" id="downloadReceipt">Descargar comprobante</button><a class="button outline" href="cuenta.html">Ver mis reservas ↗</a></div>`,
     );
     document.getElementById("downloadReceipt").onclick = () => {
       const blob = new Blob(
@@ -398,32 +402,216 @@ const Demo = (() => {
       return toast("Primero confirma la reserva en tu cuenta.");
     if (q.paid >= q.total) return toast("Esta reserva ya está pagada.");
     const balance = q.total - q.paid;
-    modal(
-      `<p class="eyebrow">CHECKOUT DE DEMOSTRACIÓN</p><h2>Un paso <em>más cerca.</em></h2><div class="order-card"><h3>${esc(q.category)}</h3><p>${esc(q.date)} · ${esc(q.venue)}</p><div class="summary-line"><span>Total</span><strong>${money(q.total)}</strong></div><div class="summary-line"><span>Pagado</span><strong>${money(q.paid)}</strong></div><div class="summary-line"><span>Saldo</span><strong>${money(balance)}</strong></div></div><form id="payForm"><label>Importe<select name="amount">${q.paid === 0 ? `<option value="${Math.round(q.total * 0.3)}">Anticipo del 30% · ${money(Math.round(q.total * 0.3))}</option>` : ""}<option value="${balance}">Pagar saldo completo · ${money(balance)}</option></select></label><label>Medio de pago<select name="method"><option>Crédito · tarjeta de prueba</option><option>Débito · tarjeta de prueba</option></select></label><div class="test-card"><span>VELVET DEMO CARD</span><h3>4242 &nbsp; 4242 &nbsp; 4242 &nbsp; 4242</h3><small>TARJETA DE PRUEBA · 12/30</small></div><p class="form-note">No ingreses datos bancarios. Esta tarjeta ficticia se usa para todos los pagos.</p><label>Resultado a simular<select name="result"><option value="ok">Pago aprobado</option><option value="fail">Pago rechazado</option></select></label><button class="button">Simular pago</button></form>`,
-    );
-    document.getElementById("payForm").onsubmit = (e) => {
+    modal(`
+      <p class="eyebrow">PAGO SEGURO · EXPERIENCIA SIMULADA</p>
+      <h2>Tu celebración,<br><em>un paso más cerca.</em></h2>
+      <div class="checkout-steps"><span class="active">1 · Elige</span><span>2 · Completa</span><span>3 · Confirma</span></div>
+      <div class="order-card"><span class="status">${esc(q.id)}</span><h3>${esc(q.category)}</h3><p>${esc(q.date)} · ${esc(q.venue)}</p><div class="summary-line"><span>Total del evento</span><strong>${money(q.total)}</strong></div><div class="summary-line"><span>Pagado</span><strong>${money(q.paid)}</strong></div><div class="summary-line"><span>Saldo pendiente</span><strong>${money(balance)}</strong></div></div>
+      <form id="payForm" autocomplete="off">
+        <label>¿Cuánto deseas pagar?<select name="amount">${q.paid === 0 ? `<option value="${Math.round(q.total * 0.3)}">Anticipo del 30% · ${money(Math.round(q.total * 0.3))}</option>` : ""}<option value="${balance}">Saldo completo · ${money(balance)}</option></select></label>
+        <fieldset class="payment-methods"><legend>Elige tu medio de pago</legend>
+          <label class="payment-option"><input type="radio" name="method" value="credit" checked><span><b>▣</b>Tarjeta<small>Crédito o débito</small></span></label>
+          <label class="payment-option nequi"><input type="radio" name="method" value="nequi"><span><b>n</b>Nequi<small>Billetera digital</small></span></label>
+          <label class="payment-option daviplata"><input type="radio" name="method" value="daviplata"><span><b>D</b>Daviplata<small>Billetera digital</small></span></label>
+        </fieldset>
+        <div id="paymentFields"></div>
+        <label>Resultado a simular<select name="result"><option value="ok">Pago aprobado</option><option value="fail">Pago rechazado</option></select></label>
+        <div id="paymentError" class="payment-error" role="alert" hidden></div>
+        <div class="checkout-total"><span>Total a pagar ahora</span><strong id="payAmount"></strong></div>
+        <label class="payment-consent"><input name="consent" type="checkbox" required><span>Entiendo que es una demostración y usaré únicamente datos ficticios. No se realizará ningún cobro.</span></label>
+        <div class="button-row"><button class="button" id="confirmPayment" type="submit">Confirmar pago simulado ↗</button><button class="text-button" type="button" id="cancelPayment">Cancelar</button></div>
+        <p class="form-note">Sin conexiones con bancos, Nequi o Daviplata. Los datos de los formularios de pago no se guardan.</p>
+      </form>`);
+    const payForm = document.getElementById("payForm");
+    const fields = document.getElementById("paymentFields");
+    const error = document.getElementById("paymentError");
+    let requestedPhone = null,
+      processing = false;
+    const showError = (text) => {
+      error.hidden = false;
+      error.textContent = text;
+      error.scrollIntoView({ block: "nearest" });
+    };
+    const clearError = () => {
+      error.hidden = true;
+      error.textContent = "";
+    };
+    const selectedMethod = () => new FormData(payForm).get("method");
+    function renderFields() {
+      requestedPhone = null;
+      clearError();
+      const method = selectedMethod(),
+        wallet = method !== "credit";
+      fields.innerHTML = wallet
+        ? `
+        <div class="wallet-banner ${method}"><b>${method === "nequi" ? "n" : "D"}</b><div><h3>${method === "nequi" ? "Paga con Nequi" : "Paga con Daviplata"}</h3><p>Autoriza tu pago con un código de demostración.</p></div></div>
+        <label>Número de celular de prueba<input name="walletPhone" inputmode="numeric" pattern="3[0-9]{9}" maxlength="10" placeholder="3001234567" required></label>
+        <button type="button" class="text-button" id="useTestData">Usar celular de prueba ↗</button>
+        <button type="button" class="button outline" id="requestPaymentCode">Generar código de prueba</button>
+        <div id="walletCodeStep" class="wallet-code-step" hidden><p id="walletCodeHint" role="status"></p><label>Código de aprobación<input name="walletCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6 dígitos" disabled></label></div>`
+        : `
+        <div class="test-card"><span>VELVET · TARJETA DE DEMOSTRACIÓN</span><h3>4242 &nbsp; 4242 &nbsp; 4242 &nbsp; 4242</h3><small>SOLO PARA PRUEBAS · SIN COBROS REALES</small></div>
+        <button type="button" class="text-button" id="useTestData">Completar con datos de prueba ↗</button>
+        <div class="form-grid"><label class="full-width">Nombre del titular<input name="cardHolder" placeholder="Ej. Cliente de prueba" required minlength="3" maxlength="60"></label><label class="full-width">Número de tarjeta ficticia<input name="cardNumber" inputmode="numeric" placeholder="4242 4242 4242 4242" maxlength="23" required pattern="[0-9 ]{16,23}"></label><label>Vencimiento (MM/AA)<input name="cardExpiry" inputmode="numeric" placeholder="12/30" maxlength="5" required pattern="(0[1-9]|1[0-2])/[0-9]{2}"></label><label>CVV de prueba<input name="cardCvv" type="password" inputmode="numeric" placeholder="123" maxlength="3" required pattern="[0-9]{3}"></label><label>Tipo de tarjeta<select name="cardType"><option>Crédito</option><option>Débito</option></select></label><label id="installmentsLabel">Cuotas<select name="installments"><option value="1">1 cuota · sin intereses demo</option><option value="3">3 cuotas · sin intereses demo</option><option value="6">6 cuotas · sin intereses demo</option><option value="12">12 cuotas · sin intereses demo</option></select></label></div>
+        <p class="form-note">Usa 4242 4242 4242 4242 o 5555 5555 5555 4444. No ingreses información de una tarjeta real.</p>`;
+      document.getElementById("useTestData").onclick = () => {
+        if (wallet) payForm.elements.walletPhone.value = "3001234567";
+        else {
+          payForm.elements.cardHolder.value = "Cliente de prueba";
+          payForm.elements.cardNumber.value = "4242 4242 4242 4242";
+          payForm.elements.cardExpiry.value = `12/${String(new Date().getFullYear() + 2).slice(-2)}`;
+          payForm.elements.cardCvv.value = "123";
+        }
+        clearError();
+      };
+      if (wallet) {
+        const phone = payForm.elements.walletPhone;
+        phone.oninput = () => {
+          requestedPhone = null;
+          document.getElementById("walletCodeStep").hidden = true;
+          payForm.elements.walletCode.disabled = true;
+          payForm.elements.walletCode.value = "";
+        };
+        document.getElementById("requestPaymentCode").onclick = () => {
+          if (!phone.reportValidity()) return;
+          requestedPhone = phone.value;
+          document.getElementById("walletCodeStep").hidden = false;
+          document.getElementById("walletCodeHint").textContent =
+            "Tu código de prueba es 123456. Escríbelo abajo. No se envió ningún SMS.";
+          payForm.elements.walletCode.disabled = false;
+          payForm.elements.walletCode.required = true;
+          payForm.elements.walletCode.focus();
+          clearError();
+        };
+      } else {
+        payForm.elements.cardNumber.oninput = (e) => {
+          e.target.value = e.target.value
+            .replace(/\D/g, "")
+            .slice(0, 16)
+            .replace(/(.{4})/g, "$1 ")
+            .trim();
+        };
+        payForm.elements.cardExpiry.oninput = (e) => {
+          const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+          e.target.value =
+            digits.length > 2
+              ? digits.slice(0, 2) + "/" + digits.slice(2)
+              : digits;
+        };
+        payForm.elements.cardType.onchange = () => {
+          const debit = payForm.elements.cardType.value === "Débito";
+          payForm.elements.installments.value = "1";
+          payForm.elements.installments.disabled = debit;
+          document.getElementById("installmentsLabel").hidden = debit;
+        };
+      }
+    }
+    payForm
+      .querySelectorAll('[name="method"]')
+      .forEach((radio) => (radio.onchange = renderFields));
+    const updateAmount = () => {
+      document.getElementById("payAmount").textContent = money(
+        Number(payForm.elements.amount.value),
+      );
+    };
+    payForm.elements.amount.onchange = updateAmount;
+    document.getElementById("cancelPayment").onclick = close;
+    payForm.addEventListener("input", clearError);
+    payForm.onsubmit = async (e) => {
       e.preventDefault();
-      const f = new FormData(e.target);
-      if (f.get("result") === "fail")
-        return toast(
-          "Pago de prueba rechazado. Intenta de nuevo con resultado aprobado.",
-        );
-      const amount = Number(f.get("amount"));
+      if (processing) return;
+      const data = new FormData(payForm),
+        method = data.get("method"),
+        amount = Number(data.get("amount"));
+      if (q.status !== "Reservada")
+        return showError("La reserva ya no está activa. Revisa su estado.");
       if (amount <= 0 || amount > q.total - q.paid)
-        return toast("El saldo cambió. Abre el pago nuevamente.");
-      q.paid += amount;
-      const p = {
+        return showError("El saldo cambió. Abre el pago nuevamente.");
+      if (method === "credit") {
+        const digits = String(data.get("cardNumber")).replace(/\D/g, "");
+        if (!["4242424242424242", "5555555555554444"].includes(digits))
+          return showError(
+            "Usa una de las tarjetas ficticias indicadas o pulsa Completar con datos de prueba.",
+          );
+        const [month, year] = String(data.get("cardExpiry"))
+            .split("/")
+            .map(Number),
+          now = new Date();
+        if (
+          2000 + year < now.getFullYear() ||
+          (2000 + year === now.getFullYear() && month < now.getMonth() + 1)
+        )
+          return showError(
+            "La tarjeta de prueba está vencida. Selecciona un vencimiento futuro.",
+          );
+      } else if (
+        requestedPhone !== data.get("walletPhone") ||
+        data.get("walletCode") !== "123456"
+      ) {
+        return showError(
+          "Genera el código de prueba y escribe 123456 para autorizar el pago.",
+        );
+      }
+      processing = true;
+      clearError();
+      const submit = document.getElementById("confirmPayment");
+      submit.disabled = true;
+      submit.textContent = "Procesando simulación…";
+      payForm.setAttribute("aria-busy", "true");
+      payForm
+        .querySelectorAll("input,select,button:not(#cancelPayment)")
+        .forEach((el) => (el.disabled = true));
+      await new Promise((resolve) => setTimeout(resolve, 700));
+      if (!document.getElementById("modal").open || !payForm.isConnected)
+        return;
+      const unlock = () => {
+        processing = false;
+        payForm.removeAttribute("aria-busy");
+        payForm
+          .querySelectorAll("input,select,button")
+          .forEach((el) => (el.disabled = false));
+        if (method === "credit" && payForm.elements.cardType.value === "Débito")
+          payForm.elements.installments.disabled = true;
+        submit.textContent = "Reintentar pago simulado ↗";
+      };
+      if (data.get("result") === "fail") {
+        unlock();
+        return showError(
+          "Pago simulado rechazado. No se descontó dinero ni se modificó tu saldo. Selecciona Pago aprobado e inténtalo de nuevo.",
+        );
+      }
+      if (q.status !== "Reservada" || amount > q.total - q.paid) {
+        unlock();
+        return showError(
+          "La reserva o el saldo cambió. Cierra esta ventana y revisa tu reserva.",
+        );
+      }
+      const label =
+        method === "credit"
+          ? `${data.get("cardType")} · tarjeta de prueba${data.get("cardType") === "Crédito" ? ` · ${data.get("installments")} cuota(s)` : ""}`
+          : `${method === "nequi" ? "Nequi" : "Daviplata"} · billetera de prueba`;
+      const payment = {
         id: id("REC"),
         quoteId: q.id,
         amount,
         date: new Date().toISOString(),
-        method: f.get("method"),
+        method: label,
       };
-      state.payments.push(p);
-      save();
+      q.paid += amount;
+      state.payments.push(payment);
+      if (!save()) {
+        q.paid -= amount;
+        state.payments.pop();
+        unlock();
+        return showError(
+          "No pudimos guardar el comprobante. Libera espacio local y vuelve a intentarlo.",
+        );
+      }
       onDone?.();
-      receipt(p);
+      receipt(payment);
     };
+    renderFields();
+    updateAmount();
   }
   function init() {
     document.documentElement.dataset.theme = state.theme;
@@ -436,6 +624,10 @@ const Demo = (() => {
         }),
     );
     document.querySelector(".modal-close")?.addEventListener("click", close);
+    document.getElementById("modal")?.addEventListener("close", () => {
+      const t = document.getElementById("toast");
+      if (t) document.body.append(t);
+    });
     document.getElementById("modal")?.addEventListener("click", (e) => {
       if (e.target.id === "modal") close();
     });

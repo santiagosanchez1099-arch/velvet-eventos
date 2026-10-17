@@ -64,14 +64,17 @@ const path = require("node:path");
     await page.locator("#loginForm button").click();
     await page.locator("[data-reserve]").click();
     await page.locator("[data-pay]").click();
+    await page.locator("#useTestData").click();
+    await page.locator('#payForm [name="consent"]').check();
     await page.locator('#payForm [name="result"]').selectOption("fail");
-    await page.locator("#payForm button").click();
+    await page.locator("#confirmPayment").click();
     data = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("velvet-demo-v1")),
     );
+    await page.waitForSelector("#paymentError:not([hidden])");
     assert.equal(data.quotes.at(-1).paid, 0);
     await page.locator('#payForm [name="result"]').selectOption("ok");
-    await page.locator("#payForm button").click();
+    await page.locator("#confirmPayment").click();
     await page.waitForSelector("#downloadReceipt");
     data = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("velvet-demo-v1")),
@@ -82,7 +85,10 @@ const path = require("node:path");
     assert.ok((await download).suggestedFilename().endsWith(".txt"));
     await page.locator(".modal-close").click();
     await page.locator("[data-pay]").click();
-    await page.locator("#payForm button").click();
+    await page.locator("#useTestData").click();
+    await page.locator('#payForm [name="consent"]').check();
+    await page.locator("#confirmPayment").click();
+    await page.waitForSelector("#downloadReceipt");
     await page.locator(".modal-close").click();
     data = await page.evaluate(() =>
       JSON.parse(localStorage.getItem("velvet-demo-v1")),

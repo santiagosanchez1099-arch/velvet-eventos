@@ -62,8 +62,11 @@ function showCategory(id) {
   document.getElementById("chooseCategory").onclick = () => {
     form.category.value = c.name;
     updateSummary();
-    Demo.close();
-    location.hash = "personaliza";
+    goToPlanner(
+      "✓ Celebración " +
+        c.name +
+        " seleccionada. Elige los detalles de tu evento.",
+    );
   };
 }
 function renderGallery(filter = "Todas") {
@@ -104,6 +107,40 @@ function renderGallery(filter = "Todas") {
       }),
   );
 }
+function goToPlanner(message, field = "category") {
+  Demo.close();
+  document.getElementById("plannerFeedback").textContent = message;
+  document.getElementById("plannerFeedback").hidden = false;
+  history.replaceState(null, "", "#personaliza");
+  document
+    .getElementById("personaliza")
+    .scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+      block: "start",
+    });
+  form.elements[field]?.focus({ preventScroll: true });
+}
+function selectPlan(packageId) {
+  const plan = state.packages.find((p) => p.id === packageId);
+  form.package.value = plan.id;
+  updateSummary();
+  document.querySelectorAll("[data-package]").forEach((b) => {
+    const selected = b.dataset.package === plan.id;
+    b.setAttribute("aria-pressed", String(selected));
+    b.closest(".package-card").classList.toggle("selected", selected);
+  });
+  modal(
+    `<p class="eyebrow">TU PLAN ESTÁ SELECCIONADO</p><h2>Un gran comienzo:<br><em>${esc(plan.name)}.</em></h2><p>${esc(plan.description)}</p><div class="plan-price">${money(plan.price)}<p class="form-note">Base para 30 invitados · valores de demostración</p></div><ul class="plan-inclusions">${plan.features.map((x) => "<li>✓ " + esc(x) + "</li>").join("")}</ul><p>Ahora elige tu celebración, personaliza los detalles y selecciona la fecha. Después podrás reservar y simular tu pago con Nequi, Daviplata o tarjeta.</p><button class="button" id="continuePlan">Personalizar este plan ↗</button>`,
+  );
+  document.getElementById("continuePlan").onclick = () =>
+    goToPlanner(
+      "✓ Plan " +
+        plan.name +
+        " seleccionado. Completa los detalles para cotizar o reservar.",
+    );
+}
 function renderPackages() {
   document.getElementById("packageGrid").innerHTML = state.packages
     .map(
@@ -114,13 +151,17 @@ function renderPackages() {
   document.querySelectorAll("[data-package]").forEach(
     (b) =>
       (b.onclick = () => {
-        form.package.value = b.dataset.package;
-        updateSummary();
-        location.hash = "personaliza";
+        selectPlan(b.dataset.package);
       }),
   );
 }
 const form = document.getElementById("quoteForm");
+const plannerFeedback = document.createElement("p");
+plannerFeedback.id = "plannerFeedback";
+plannerFeedback.className = "planner-feedback";
+plannerFeedback.hidden = true;
+plannerFeedback.setAttribute("role", "status");
+form.prepend(plannerFeedback);
 form.category.innerHTML = Demo.categories
   .map((c) => `<option>${c.name}</option>`)
   .join("");
@@ -219,8 +260,22 @@ function saveQuote(reserve) {
   state.quotes.push(q);
   Demo.save();
   modal(
-    `<p class="eyebrow">${reserve ? "RESERVA SOLICITADA" : "IDEA GUARDADA"}</p><h2>El inicio de<br><em>una gran historia.</em></h2><p>Tu referencia es <strong>${q.id}</strong>.</p><p>${esc(q.category)} · ${esc(q.date)}<br>${esc(q.venue)}</p><h3>${money(q.total)}</h3><p>Accede a Mi cuenta con <strong>${esc(q.email)}</strong> para consultar el detalle, ${reserve ? "simular el anticipo" : "confirmar la reserva"} y descargar comprobantes.</p><a class="button" href="cuenta.html">Ir a mi cuenta ↗</a><p class="form-note">Reserva y cotización de demostración. No existe confirmación comercial real.</p>`,
+    `<p class="eyebrow">${reserve ? "RESERVA SOLICITADA" : "IDEA GUARDADA"}</p><h2>El inicio de<br><em>una gran historia.</em></h2><p>Tu referencia es <strong>${q.id}</strong>.</p><p>${esc(q.category)} · ${esc(q.date)}<br>${esc(q.venue)}</p><h3>${money(q.total)}</h3><p>Accede a Mi cuenta con <strong>${esc(q.email)}</strong> para consultar el detalle, ${reserve ? "simular el anticipo" : "confirmar la reserva"} y descargar comprobantes.</p><div class="button-row"><button class="button" id="paySavedQuote">${reserve ? "Simular pago ahora ↗" : "Reservar y simular pago ↗"}</button><a class="button outline" href="cuenta.html">Ir a mi cuenta ↗</a></div><p class="form-note">Reserva y cotización de demostración. No existe confirmación comercial real.</p>`,
   );
+  document.getElementById("paySavedQuote").onclick = () => {
+    if (q.status === "Cotizada") {
+      if (Demo.occupied(q.date, q.venue, q.id))
+        return toast(
+          "La fecha ya está ocupada en este lugar. Cierra esta ventana y elige otra fecha.",
+        );
+      q.status = "Reservada";
+      if (!Demo.save()) {
+        q.status = "Cotizada";
+        return;
+      }
+    }
+    Demo.pay(q);
+  };
 }
 form.onsubmit = (e) => {
   e.preventDefault();
@@ -238,7 +293,10 @@ document.querySelectorAll("[data-extra]").forEach(
       const i = state.extras.findIndex((x) => x.name === b.dataset.extra);
       form.querySelector(`[name="extras"][value="${i}"]`).checked = true;
       updateSummary();
-      location.hash = "personaliza";
+      goToPlanner(
+        "✓ Servicio añadido a tu cotización. Puedes seguir personalizando.",
+        "guests",
+      );
     }),
 );
 document.getElementById("contactForm").onsubmit = (e) => {
@@ -263,8 +321,10 @@ document.getElementById("invitationPreview").onclick = () => {
       form.querySelector('[name="extras"][value="0"]').checked = true;
       form.notes.value = `Invitación: ${f.title} · ${f.hosts}`;
       updateSummary();
-      Demo.close();
-      location.hash = "personaliza";
+      goToPlanner(
+        "✓ Invitación añadida. Completa la fecha y los datos de tu evento.",
+        "date",
+      );
     };
   };
 };
