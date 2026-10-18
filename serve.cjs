@@ -10,58 +10,59 @@ const types = {
   ".webm": "video/webm",
   ".mp4": "video/mp4",
 };
-http
-  .createServer((req, res) => {
-    let name;
-    try {
-      name = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
-    } catch {
-      res.writeHead(400).end();
+const server = http.createServer((req, res) => {
+  res.setHeader("X-Velvet-Demo", "1");
+  let name;
+  try {
+    name = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
+  } catch {
+    res.writeHead(400).end();
+    return;
+  }
+  const file = path.resolve(root, "." + (name === "/" ? "/index.html" : name));
+  if (!file.startsWith(root + path.sep)) {
+    res.writeHead(403).end();
+    return;
+  }
+  fs.stat(file, (err, stat) => {
+    if (err || !stat.isFile()) {
+      res.writeHead(404).end("No encontrado");
       return;
     }
-    const file = path.resolve(
-      root,
-      "." + (name === "/" ? "/index.html" : name),
-    );
-    if (!file.startsWith(root + path.sep)) {
-      res.writeHead(403).end();
-      return;
-    }
-    fs.stat(file, (err, stat) => {
-      if (err || !stat.isFile()) {
-        res.writeHead(404).end("No encontrado");
+    const range = req.headers.range;
+    if (range) {
+      const m = /bytes=(\d+)-(\d*)/.exec(range);
+      if (!m) {
+        res.writeHead(416).end();
         return;
       }
-      const range = req.headers.range;
-      if (range) {
-        const m = /bytes=(\d+)-(\d*)/.exec(range);
-        if (!m) {
-          res.writeHead(416).end();
-          return;
-        }
-        const start = Number(m[1]),
-          end = m[2] ? Math.min(Number(m[2]), stat.size - 1) : stat.size - 1;
-        if (start >= stat.size || start > end) {
-          res.writeHead(416).end();
-          return;
-        }
-        res.writeHead(206, {
-          "Content-Type":
-            types[path.extname(file)] || "application/octet-stream",
-          "Content-Range": `bytes ${start}-${end}/${stat.size}`,
-          "Accept-Ranges": "bytes",
-          "Content-Length": end - start + 1,
-        });
-        fs.createReadStream(file, { start, end }).pipe(res);
-      } else {
-        res.writeHead(200, {
-          "Content-Type":
-            types[path.extname(file)] || "application/octet-stream",
-          "Content-Length": stat.size,
-          "Accept-Ranges": "bytes",
-        });
-        fs.createReadStream(file).pipe(res);
+      const start = Number(m[1]),
+        end = m[2] ? Math.min(Number(m[2]), stat.size - 1) : stat.size - 1;
+      if (start >= stat.size || start > end) {
+        res.writeHead(416).end();
+        return;
       }
-    });
-  })
-  .listen(4173, "127.0.0.1", () => console.log("Local: http://127.0.0.1:4173"));
+      res.writeHead(206, {
+        "Content-Type": types[path.extname(file)] || "application/octet-stream",
+        "Content-Range": `bytes ${start}-${end}/${stat.size}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": end - start + 1,
+      });
+      fs.createReadStream(file, { start, end }).pipe(res);
+    } else {
+      res.writeHead(200, {
+        "Content-Type": types[path.extname(file)] || "application/octet-stream",
+        "Content-Length": stat.size,
+        "Accept-Ranges": "bytes",
+      });
+      fs.createReadStream(file).pipe(res);
+    }
+  });
+});
+
+module.exports = server;
+if (require.main === module) {
+  server.listen(4173, "127.0.0.1", () =>
+    console.log("Local: http://127.0.0.1:4173"),
+  );
+}

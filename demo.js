@@ -319,7 +319,10 @@ const Demo = (() => {
   function toast(t) {
     let el = document.getElementById("toast");
     const dialog = document.getElementById("modal");
-    (dialog?.open ? dialog : document.body).append(el);
+    (dialog?.open
+      ? dialog
+      : document.querySelector("#sectionDialog[open]") || document.body
+    ).append(el);
     el.textContent = t;
     el.classList.add("visible");
     clearTimeout(toast.timer);
@@ -702,3 +705,81 @@ const Demo = (() => {
     dateKey,
   };
 })();
+
+// Reveal sections progressively; all content remains visible without JavaScript.
+document.addEventListener("DOMContentLoaded", () => {
+  const progress = document.createElement("div");
+  progress.className = "scroll-progress";
+  progress.setAttribute("aria-hidden", "true");
+  document.body.append(progress);
+  let scheduled = false;
+  function updateProgress() {
+    const distance = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${distance > 0 ? Math.min(1, scrollY / distance) : 0})`;
+    scheduled = false;
+  }
+  addEventListener(
+    "scroll",
+    () => {
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(updateProgress);
+      }
+    },
+    { passive: true },
+  );
+  addEventListener("resize", updateProgress);
+  updateProgress();
+  const preference = matchMedia("(prefers-reduced-motion: reduce)");
+  if (preference.matches || !("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver(
+    (entries) =>
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("pending");
+          entry.target.classList.add("revealed");
+          observer.unobserve(entry.target);
+        }
+      }),
+    { threshold: 0.08 },
+  );
+  const selector =
+    ".section-head,.experience-card,.gallery-item,.package-card,.service-grid article,.review-grid blockquote,.feature-band,.contact-section>.panel,.stats-grid .stat";
+  function watch(root) {
+    const elements = [
+      ...(root.matches?.(selector) ? [root] : []),
+      ...root.querySelectorAll(selector),
+    ];
+    elements.forEach((element, i) => {
+      if (element.dataset.motionReady) return;
+      element.dataset.motionReady = "true";
+      element.classList.add("reveal");
+      element.style.setProperty("--reveal-delay", `${(i % 4) * 65}ms`);
+      if (element.getBoundingClientRect().top > innerHeight * 0.95) {
+        element.classList.add("pending");
+        observer.observe(element);
+      } else element.classList.add("revealed");
+    });
+  }
+  watch(document.querySelector("main") || document.body);
+  const mutations = new MutationObserver((entries) => {
+    entries.forEach((entry) =>
+      entry.addedNodes.forEach((node) => {
+        if (node.nodeType === 1) watch(node);
+      }),
+    );
+  });
+  mutations.observe(document.querySelector("main") || document.body, {
+    childList: true,
+    subtree: true,
+  });
+  preference.addEventListener("change", (event) => {
+    if (event.matches) {
+      observer.disconnect();
+      document
+        .querySelectorAll(".reveal.pending")
+        .forEach((el) => el.classList.remove("pending"));
+      mutations.disconnect();
+    }
+  });
+});

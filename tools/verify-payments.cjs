@@ -17,6 +17,7 @@ fs.mkdirSync("qa", { recursive: true });
       errors = [],
       remote = [];
     page.on("pageerror", (e) => errors.push(e.message));
+
     page.on("request", (r) => {
       if (
         !r.url().startsWith("http://127.0.0.1:4173") &&
@@ -24,21 +25,27 @@ fs.mkdirSync("qa", { recursive: true });
       )
         remote.push(r.url());
     });
-    const go = (route) => page.goto("http://127.0.0.1:4173/" + route + ".html");
+    const go = async (route) => {
+      await page.goto("http://127.0.0.1:4173/" + route + ".html");
+      if (await page.locator("#welcomeDialog[open]").count())
+        await page.locator("#skipWelcome").click();
+    };
     const read = () =>
       page.evaluate(() => JSON.parse(localStorage.getItem("velvet-demo-v1")));
     await go("index");
     for (const plan of ["basico", "especial", "premium", "personalizado"]) {
+      await page.evaluate(() => Sections.open("paquetes"));
       await page.locator(`[data-package="${plan}"]`).click();
-      assert.ok(await page.locator("#continuePlan").isVisible());
-      await page.locator("#continuePlan").click();
+      await page.waitForFunction(() => location.hash === "#personaliza");
       assert.equal(await page.locator("#eventPackage").inputValue(), plan);
       assert.ok(await page.locator("#plannerFeedback").isVisible());
     }
+    await page.evaluate(() => Sections.open("servicios"));
     await page.locator("[data-extra]").click();
     assert.ok(
       await page.locator('#quoteForm [name="extras"][value="4"]').isChecked(),
     );
+    await page.evaluate(() => Sections.open("experiencias"));
     await page.locator('[data-category="7"]').first().click();
     await page.locator("#chooseCategory").click();
     assert.equal(await page.locator("#eventCategory").inputValue(), "Bodas");

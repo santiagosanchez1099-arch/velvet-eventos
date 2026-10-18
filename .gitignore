@@ -5,3 +5,6 @@ __pycache__/
 .runtime/
 qa/
 node_modules/
+
+# Windows launcher is part of the distributable demo.
+!ABRIR-VELVET.bat

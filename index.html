@@ -9,10 +9,20 @@
     />
     <title>Velvet Studio · Momentos que se quedan</title>
     <link rel="stylesheet" href="eventos.css" />
+    <link rel="stylesheet" href="ia.css" />
     <script defer src="demo.js"></script>
+    <script defer src="perfiles.js"></script>
+    <script defer src="catalogo.js"></script>
+    <script defer src="inspiracion.js"></script>
     <script defer src="eventos.js"></script>
+    <script defer src="ia.js"></script>
+    <script defer src="infantiles.js"></script>
+    <script defer src="experiencia.js"></script>
+    <script defer src="ubicacion.js"></script>
+    <script defer src="clientes.js"></script>
+    <script defer src="secciones.js"></script>
   </head>
-  <body>
+  <body class="modal-home">
     <div class="demo-bar">
       UN ESTUDIO DE MOMENTOS EXTRAORDINARIOS
       <span>Experiencia demo · datos y pagos simulados</span>
@@ -26,15 +36,26 @@
       >
         ☰
       </button>
-      <nav id="navigation">
-        <a href="#experiencias">Experiencias</a
-        ><a href="#galeria">Inspiración</a><a href="#paquetes">Paquetes</a
-        ><a href="#personaliza">Diseña tu evento</a
-        ><a href="#contacto">Contacto</a>
+      <nav id="navigation" aria-label="Secciones principales">
+        <a href="#experiencias">Eventos</a><a href="#infantiles">Infantiles</a>
+        <a href="#galeria">Galería</a><a href="#paquetes">Paquetes</a>
+        <a href="#ubicacion">Ubicación</a><a href="#personaliza">Cotizar</a>
+        <a class="mobile-account" href="cuenta.html">Mi cuenta ↗</a>
       </nav>
       <div class="header-actions">
         <button class="icon theme-toggle" aria-label="Cambiar tema">◐</button
-        ><a class="account-link" href="cuenta.html">Mi cuenta ↗</a>
+        ><a
+          class="portal-client"
+          href="cuenta.html"
+          aria-label="Abrir portal de clientes"
+          >Mis reservas ↗</a
+        ><a
+          class="admin-access"
+          href="admin.html"
+          aria-label="Abrir portal administrativo"
+          ><span class="portal-label">Administración ↗</span
+          ><span class="portal-short">Equipo ↗</span></a
+        >
       </div>
     </header>
     <main>
@@ -59,7 +80,7 @@
           </p>
           <div class="button-row">
             <a class="button ivory" href="#personaliza"
-              >Diseña tu celebración <span>↗</span></a
+              >Cotizar mi evento <span>↗</span></a
             ><button class="button glass" data-chat>
               Hablemos por WhatsApp ↗
             </button>
@@ -79,6 +100,34 @@
         <span>DISEÑAMOS EMOCIONES</span><b>✦</b><span>CELEBRAMOS HISTORIAS</span
         ><b>✦</b><span>CUIDAMOS CADA DETALLE</span><b>✦</b
         ><span>CREAMOS RECUERDOS</span>
+      </div>
+      <div class="journey-shortcuts" aria-label="Empieza por aquí">
+        <div>
+          <span class="eyebrow">TU CELEBRACIÓN, MÁS FÁCIL</span
+          ><strong>¿Por dónde empezamos?</strong>
+        </div>
+        <a href="#paquetes"
+          ><b>01</b
+          ><span
+            >Elegir un plan<small>Compara precios y servicios ↗</small></span
+          ></a
+        >
+        <a href="#personaliza"
+          ><b>02</b
+          ><span
+            >Personalizar y reservar<small
+              >Detalles, fecha y presupuesto ↗</small
+            ></span
+          ></a
+        >
+        <a href="cuenta.html"
+          ><b>03</b
+          ><span
+            >Ver mi reserva y pagar<small
+              >Todo en tu cuenta de cliente ↗</small
+            ></span
+          ></a
+        >
       </div>
       <section class="section" id="experiencias">
         <div class="section-head">
@@ -173,7 +222,12 @@
         </div>
         <div class="planner-layout">
           <form id="quoteForm" class="panel">
-            <div class="step-title">
+            <nav class="planner-shortcuts" aria-label="Pasos para cotizar">
+              <a href="#detallesEvento">1. Tu evento</a
+              ><a href="#adicionalesEvento">2. Adicionales</a
+              ><a href="#fechaEvento">3. Fecha y datos</a>
+            </nav>
+            <div class="step-title" id="detallesEvento">
               <span>01</span>
               <h3>La esencia de tu evento</h3>
             </div>
@@ -232,12 +286,12 @@
                 >Código de promoción<input name="promo" placeholder="VELVET10"
               /></label>
             </div>
-            <div class="step-title">
+            <div class="step-title" id="adicionalesEvento">
               <span>02</span>
               <h3>Detalles que suman</h3>
             </div>
             <div id="extrasList" class="extras-grid"></div>
-            <div class="step-title">
+            <div class="step-title" id="fechaEvento">
               <span>03</span>
               <h3>Una fecha para recordar</h3>
             </div>
@@ -375,6 +429,11 @@
           </blockquote>
         </div>
       </section>
+      <section
+        class="section location-section"
+        id="ubicacion"
+        aria-labelledby="locationTitle"
+      ></section>
       <section class="section contact-section" id="contacto">
         <div>
           <p class="eyebrow">06 / TU HISTORIA EMPIEZA AQUÍ</p>
@@ -447,22 +506,33 @@
           </p>
         </details>
       </section>
+      <section class="section client-section" id="cliente">
+        <div id="accountContent"></div>
+      </section>
     </main>
+    <nav class="mobile-quickbar" aria-label="Acciones rápidas">
+      <a href="#personaliza">✦ Cotizar</a><a href="#infantiles">Catálogo</a
+      ><a href="cuenta.html">Mis reservas ↗</a>
+    </nav>
     <footer class="site-footer">
       <a class="brand" href="#inicio">velvet<span>STUDIO · EVENTOS</span></a>
       <p>Creamos el ambiente. Tú creas los recuerdos.</p>
-      <a href="admin.html">Panel administrativo ↗</a
+      <a href="cuenta.html">Mi espacio de cliente ↗</a
       ><small
         >© 2026 Velvet Studio · Prototipo funcional · Sin transacciones
         reales</small
       >
     </footer>
     <button
-      class="chat-fab"
-      data-chat
-      aria-label="Abrir conversación de demostración"
+      class="chat-fab assistant-launcher"
+      data-assistant
+      aria-label="Abrir Velvet IA, asistente de demostración"
+      aria-expanded="false"
+      aria-controls="assistantPanel"
     >
-      ✧ <span>Hablemos</span>
+      <img src="ia.png" alt="" /><span
+        >Velvet IA<small>¿Creamos tu evento?</small></span
+      ><b aria-hidden="true">✦</b>
     </button>
     <dialog id="modal">
       <button class="modal-close icon" aria-label="Cerrar ventana">×</button>

@@ -1,0 +1,85 @@
+VELVET STUDIO - ABRIR LA WEB EN WINDOWS
+=====================================
+
+SOLO LA PRIMERA VEZ
+
+1. Instala Node.js, version LTS, desde:
+   https://nodejs.org/en/download
+   Elige el instalador para Windows y sigue sus indicaciones.
+   No necesitas instalar Git, Python ni un editor de codigo.
+
+2. Haz clic derecho sobre el ZIP recibido y elige "Extraer todo".
+   Completa la extraccion. No abras la web desde dentro del ZIP.
+
+3. Entra a la carpeta extraida Velvet-Studio.
+
+4. Haz doble clic en ABRIR-VELVET.bat.
+   Si Windows oculta las extensiones, puede aparecer como ABRIR-VELVET.
+
+5. Se abrira una ventana y luego tu navegador con la web.
+   Conserva la ventana abierta; puedes minimizarla.
+
+SI EL NAVEGADOR NO SE ABRE
+
+Abre Chrome, Edge o tu navegador y escribe esta direccion arriba:
+http://127.0.0.1:4173
+
+PARA USARLA OTRO DIA
+
+Haz doble clic en ABRIR-VELVET.bat otra vez.
+No tienes que instalar todo de nuevo.
+
+PARA CERRAR LA WEB
+
+Cierra la ventana de Velvet Studio o pulsa Ctrl+C dentro de ella.
+Cerrar solo la pestana del navegador no apaga el servidor.
+
+PARA PROBARLA
+
+- Cuenta de ejemplo: laura@demo.local. No necesita contrasena.
+- Elige un paquete, personaliza tu evento y solicita una reserva.
+- Puedes simular pagos con tarjeta, Nequi y Daviplata.
+- En tarjeta, pulsa "Completar con datos de prueba".
+- En Nequi/Daviplata, usa el celular de prueba y el codigo 123456.
+- Todos los pagos son ficticios. No uses datos bancarios reales.
+- Los portales Clientes y Administracion estan arriba, junto al cambio de tema.
+- Equipo/Administracion: entra con angie@demo.local, sin contrasena.
+- En Usuarios y roles puedes crear mas usuarios y asignar sus herramientas.
+- En Clientes puedes crear tu propia cuenta para organizar tus eventos.
+- El sonido es opcional: usa Activar ambiente para escuchar o silenciar.
+
+TUS DATOS DE PRUEBA
+
+Cada persona tiene sus propios datos en su navegador.
+No se comparten reservas ni pagos entre computadores.
+Utiliza siempre http://127.0.0.1:4173 para conservar el mismo espacio de datos.
+Si borras los datos del navegador, puedes perder tus pruebas guardadas.
+La primera descarga e instalacion requiere internet; despues la web funciona localmente.
+
+SI ALGO FALLA
+
+- Si falta Node.js, el iniciador te mostrara la pagina oficial de descarga.
+- Si faltan archivos, vuelve a extraer TODO el ZIP.
+- Si la web ya esta abierta, el iniciador vuelve a abrir esa misma web.
+- Si el puerto esta ocupado por otro programa o una version anterior,
+  cierra el servidor anterior y vuelve a intentarlo.
+- Si necesitas ayuda, comparte una captura del mensaje que aparece.
+
+No hace falta escribir comandos para utilizar ABRIR-VELVET.bat.
+
+NOVEDADES DE LA DEMO
+- Presentacion a pantalla completa cada vez que abras o actualices Inicio.
+  Puedes saltarla o esperar unos segundos. El sonido sigue siendo opcional.
+- Cotizar esta arriba en el menu y en la barra inferior del celular.
+- Este es mi plan abre directamente el formulario con el plan elegido.
+- En Galeria puedes filtrar ejemplos y cotizar desde una foto ampliada.
+- Ubicacion muestra un mapa ilustrativo de Bogota con cuatro origenes.
+  Consultar ruta en Google Maps abre una pestana externa y necesita internet.
+  El Parque de la 93 es solo un punto de referencia de demostracion.
+
+NAVEGACION POR VENTANAS
+Ahora el inicio tiene un panel compacto de acciones. Pulsa Elegir un plan,
+Cotizar y reservar o Mis reservas y pagos: cada opcion abre una ventana.
+Dentro puedes cambiar entre Planes, Cotizar y Mis reservas y pagos.
+Cierra con Cerrar, Escape o pulsando fuera de la ventana en computador.
+Los datos de tu cotizacion se conservan al cambiar de seccion.

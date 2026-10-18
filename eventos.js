@@ -3,7 +3,8 @@ let activeGroup = "Todas",
   allCategories = false;
 const groups = [
   "Todas",
-  "Infantiles",
+  "Infantiles niño",
+  "Infantiles niña",
   "Sociales",
   "Romance",
   "Familia",
@@ -30,7 +31,7 @@ function renderExperiences() {
   document.getElementById("experienceGrid").innerHTML = list
     .map(
       (c) =>
-        `<article class="experience-card"><button class="image-button" data-category="${c.id}" aria-label="Explorar ${esc(c.name)}"><img src="${c.image}" alt="Inspiración para ${esc(c.name)}" loading="lazy"><span>EXPLORAR ↗</span></button><div class="card-meta"><small>${c.group.toUpperCase()}</small><span>${String(c.id + 1).padStart(2, "0")}</span></div><h3><button class="text-button" data-category="${c.id}">${c.name} ↗</button></h3><p>${c.themes}</p></article>`,
+        `<article class="experience-card"><button class="image-button" data-category="${c.id}" aria-label="Explorar ${esc(c.name)}">${[0, 1].includes(c.id) ? KidsCatalog.media([0, 3].includes(c.id) ? KidsCatalog.themes[0] : KidsCatalog.themes[4]) : `<img src="${c.image}" alt="Inspiración para ${esc(c.name)}" loading="lazy">`}<span>EXPLORAR ↗</span></button><div class="card-meta"><small>${c.group.toUpperCase()}</small><span>${String(c.id + 1).padStart(2, "0")}</span></div><h3><button class="text-button" data-category="${c.id}">${c.name} ↗</button></h3><p>${c.themes}</p></article>`,
     )
     .join("");
   document.getElementById("showAll").textContent = allCategories
@@ -78,6 +79,9 @@ function renderGallery(filter = "Todas") {
     "Empresariales",
     "Grados",
     "Familia",
+    "Romance",
+    "Adultos",
+    "Especiales",
     "Videos",
   ];
   document.getElementById("galleryTabs").innerHTML = filters
@@ -91,7 +95,7 @@ function renderGallery(filter = "Todas") {
       .filter((p) => filter === "Todas" || p.category === filter)
       .map(
         (p) =>
-          `<button class="gallery-item" data-photo="${p.id}">${p.video ? `<video src="${p.src}" poster="imagen1.png" muted preload="none"></video><b class="play-badge">▶</b>` : `<img src="${p.src}" alt="${esc(p.title)}" loading="lazy">`}<span><small>${esc(p.category).toUpperCase()}</small>${esc(p.title)} ↗</span></button>`,
+          `<button class="gallery-item" data-photo="${p.id}">${p.video ? `<video src="${p.src}" poster="imagen1.png" muted preload="none"></video><b class="play-badge">▶</b>` : Inspiration.media(p)}<span><small>${esc(p.category).toUpperCase()}</small>${esc(p.title)} ↗</span></button>`,
       )
       .join("") || "<p>No hay imágenes en esta categoría.</p>";
   document
@@ -102,8 +106,18 @@ function renderGallery(filter = "Todas") {
       (b.onclick = () => {
         const p = state.photos.find((p) => p.id === b.dataset.photo);
         modal(
-          `${p.video ? `<video src="${p.src}" controls autoplay playsinline class="lightbox-media"></video>` : `<img class="lightbox-media" src="${p.src}" alt="${esc(p.title)}">`}<p class="eyebrow">${esc(p.category)}</p><h3>${esc(p.title)}</h3>`,
+          `${p.video ? `<video src="${p.src}" controls autoplay playsinline class="lightbox-media"></video>` : Inspiration.media(p, "lightbox-media")}<p class="eyebrow">${esc(p.category)}</p><h3>${esc(p.title)}</h3>${p.event ? '<button class="button" id="inspireQuote">Quiero una celebración así ↗</button>' : ""}`,
         );
+        if (p.event)
+          document.getElementById("inspireQuote").onclick = () => {
+            form.category.value = p.event;
+            updateSummary();
+            goToPlanner(
+              "✓ Inspiración seleccionada: " +
+                p.title +
+                ". Personaliza tu evento.",
+            );
+          };
       }),
   );
 }
@@ -111,15 +125,13 @@ function goToPlanner(message, field = "category") {
   Demo.close();
   document.getElementById("plannerFeedback").textContent = message;
   document.getElementById("plannerFeedback").hidden = false;
-  history.replaceState(null, "", "#personaliza");
-  document
-    .getElementById("personaliza")
-    .scrollIntoView({
-      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
-        : "smooth",
-      block: "start",
-    });
+  if (window.Sections) Sections.open("personaliza");
+  else {
+    history.replaceState(null, "", "#personaliza");
+    document
+      .getElementById("personaliza")
+      .scrollIntoView({ behavior: "smooth", block: "start" });
+  }
   form.elements[field]?.focus({ preventScroll: true });
 }
 function selectPlan(packageId) {
@@ -131,15 +143,11 @@ function selectPlan(packageId) {
     b.setAttribute("aria-pressed", String(selected));
     b.closest(".package-card").classList.toggle("selected", selected);
   });
-  modal(
-    `<p class="eyebrow">TU PLAN ESTÁ SELECCIONADO</p><h2>Un gran comienzo:<br><em>${esc(plan.name)}.</em></h2><p>${esc(plan.description)}</p><div class="plan-price">${money(plan.price)}<p class="form-note">Base para 30 invitados · valores de demostración</p></div><ul class="plan-inclusions">${plan.features.map((x) => "<li>✓ " + esc(x) + "</li>").join("")}</ul><p>Ahora elige tu celebración, personaliza los detalles y selecciona la fecha. Después podrás reservar y simular tu pago con Nequi, Daviplata o tarjeta.</p><button class="button" id="continuePlan">Personalizar este plan ↗</button>`,
+  goToPlanner(
+    "✓ Plan " +
+      plan.name +
+      " seleccionado. Completa los detalles para cotizar o reservar.",
   );
-  document.getElementById("continuePlan").onclick = () =>
-    goToPlanner(
-      "✓ Plan " +
-        plan.name +
-        " seleccionado. Completa los detalles para cotizar o reservar.",
-    );
 }
 function renderPackages() {
   document.getElementById("packageGrid").innerHTML = state.packages
@@ -202,7 +210,7 @@ function updateSummary() {
     f = new FormData(form),
     budget = Number(f.get("budget"));
   document.getElementById("quoteSummary").innerHTML =
-    `<p class="eyebrow">TU CELEBRACIÓN, EN UN VISTAZO</p><h3>${esc(f.get("category"))}</h3><p>${esc(f.get("theme"))}<br>${esc(f.get("colors"))}</p><div class="summary-line"><span>Plan ${esc(v.p.name)}</span><strong>${money(v.p.price)}</strong></div><div class="summary-line"><span>Invitados adicionales</span><strong>${money(v.guestCost)}</strong></div>${v.extras.map((x) => `<div class="summary-line"><span>${x.name}</span><strong>${money(x.price)}</strong></div>`).join("")}<div class="summary-line"><span>Descuento</span><strong>− ${money(v.discount)}</strong></div><div class="summary-total"><small>INVERSIÓN ESTIMADA</small><strong>${money(v.total)}</strong></div>${f.get("promo") ? `<p class="form-note">${v.discount ? "Promoción aplicada." : "Código no válido o promoción inactiva."}</p>` : ""}${budget ? `<p class="budget-status">${v.total <= budget ? "✓ Dentro de tu presupuesto" : `Supera tu presupuesto por ${money(v.total - budget)}`}</p>` : ""}<p class="form-note">Anticipo del 30%: ${money(Math.round(v.total * 0.3))}<br>Incluye montaje. Valores ilustrativos.<br>Invitados extra: ${money(35000)} por persona, a partir de 30.</p><hr><p>✦ Sin prisa, sin compromisos.<br>Guarda tu idea y vuelve cuando quieras.</p>`;
+    `<p class="eyebrow">TU CELEBRACIÓN, EN UN VISTAZO</p><h3>${esc(f.get("category"))}</h3><p>${esc(f.get("theme"))}<br>${esc(f.get("colors"))}</p><div class="summary-line"><span>Plan ${esc(v.p.name)}</span><strong>${money(v.p.price)}</strong></div><div class="summary-line"><span>Invitados adicionales</span><strong>${money(v.guestCost)}</strong></div>${v.extras.map((x) => `<div class="summary-line"><span>${x.name}</span><strong>${money(x.price)}</strong></div>`).join("")}<div class="summary-line"><span>Descuento</span><strong>− ${money(v.discount)}</strong></div><div class="summary-total"><small>INVERSIÓN ESTIMADA</small><strong>${money(v.total)}</strong></div>${f.get("promo") ? `<p class="form-note">${v.discount ? "Promoción aplicada." : "Código no válido o promoción inactiva."}</p>` : ""}${budget ? `<p class="budget-status">${v.total <= budget ? "✓ Dentro de tu presupuesto" : `Supera tu presupuesto por ${money(v.total - budget)}`}</p>` : ""}<p class="form-note">Anticipo del 30%: ${money(Math.round(v.total * 0.3))}<br>Incluye montaje. Valores ilustrativos.<br>Invitados extra: ${money(35000)} por persona, a partir de 30.</p><a class="button summary-next" href="#fechaEvento">Elegir fecha y completar datos ↓</a><hr><p>✦ Sin prisa, sin compromisos.<br>Guarda tu idea y vuelve cuando quieras.</p>`;
   availability();
 }
 function availability() {
@@ -250,7 +258,7 @@ function saveQuote(reserve) {
     ...f,
     id: Demo.id("VEL"),
     email: f.email.trim().toLowerCase(),
-    package: v.p.name,
+    package: f.kidsPlan ? `${v.p.name} · ${f.kidsPlan}` : v.p.name,
     extras: v.extras.map((x) => x.name),
     total: v.total,
     discount: v.discount,
@@ -362,3 +370,33 @@ renderExperiences();
 renderGallery();
 renderPackages();
 updateSummary();
+
+// Velvet IA only prepares the form; saving and reserving remain explicit user actions.
+window.addEventListener("velvet:personalize", (event) => {
+  const draft = event.detail || {};
+  if (draft.category && Demo.categories.some((c) => c.name === draft.category))
+    form.category.value = draft.category;
+  if (draft.packageId && state.packages.some((p) => p.id === draft.packageId))
+    form.package.value = draft.packageId;
+  if (
+    Number.isInteger(draft.guests) &&
+    draft.guests >= 10 &&
+    draft.guests <= 1000
+  )
+    form.guests.value = draft.guests;
+  if (Number.isFinite(draft.budget) && draft.budget > 0)
+    form.budget.value = Math.round(draft.budget);
+  if (draft.date && draft.date >= Demo.future(0)) form.date.value = draft.date;
+  if (
+    draft.venue &&
+    [...form.venue.options].some((o) => o.value === draft.venue)
+  ) {
+    form.venue.value = draft.venue;
+    form.venue.dispatchEvent(new Event("change"));
+  }
+  updateSummary();
+  goToPlanner(
+    "✦ Velvet IA preparó tu idea. Revisa los detalles, elige una fecha y completa tus datos.",
+    "category",
+  );
+});

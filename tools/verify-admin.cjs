@@ -15,7 +15,19 @@ const path = require("node:path");
       }),
       errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    const go = (route) => page.goto("http://127.0.0.1:4173/" + route + ".html");
+
+    const go = async (route) => {
+      await page.goto("http://127.0.0.1:4173/" + route + ".html");
+      if (await page.locator("#welcomeDialog[open]").count())
+        await page.locator("#skipWelcome").click();
+      if (await page.locator("#adminLogin").count()) {
+        await page
+          .locator('#adminLogin [name="email"]')
+          .fill("angie@demo.local");
+        await page.locator("#adminLogin button").click();
+        await page.waitForSelector("#adminContent");
+      }
+    };
     await go("paquetes");
     await page.locator('[data-edit-package="basico"]').click();
     await page.locator('#packageEdit [name="name"]').fill("Esencial QA");
@@ -25,6 +37,7 @@ const path = require("node:path");
     await page.locator('#promoEdit [name="discount"]').fill("15");
     await page.locator("#promoEdit button").click();
     await go("index");
+    await page.evaluate(() => Sections.open("personaliza"));
     assert.ok(
       (await page.locator("#packageGrid").innerText()).includes("Esencial QA"),
     );
@@ -48,16 +61,14 @@ const path = require("node:path");
     );
     await go("fotografias");
     await page.locator('#photoForm [name="title"]').fill("Inspiración QA");
-    await page
-      .locator('#photoForm [name="file"]')
-      .setInputFiles({
-        name: "prueba.png",
-        mimeType: "image/png",
-        buffer: Buffer.from(
-          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j/QcAAAAASUVORK5CYII=",
-          "base64",
-        ),
-      });
+    await page.locator('#photoForm [name="file"]').setInputFiles({
+      name: "prueba.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j/QcAAAAASUVORK5CYII=",
+        "base64",
+      ),
+    });
     await page.locator("#photoForm button").click();
     await page.waitForFunction(() =>
       document
@@ -65,6 +76,7 @@ const path = require("node:path");
         .textContent.includes("Inspiración QA"),
     );
     await go("index");
+    await page.evaluate(() => Sections.open("personaliza"));
     assert.ok(
       (await page.locator("#galleryGrid").innerText()).includes(
         "Inspiración QA",
@@ -97,22 +109,28 @@ const path = require("node:path");
     await go("configuracion");
     await page.locator("#resetDemo").click();
     await page.locator("#confirmReset").click();
-    await page.waitForFunction(() => document.querySelector("#resetDemo"));
+    await page.waitForFunction(() => document.querySelector("#adminLogin"));
     await go("index");
+    await page.evaluate(() => Sections.open("personaliza"));
     state = await page.evaluate(() => Demo.state);
     assert.equal(state.packages[0].price, 1800000);
     assert.equal(state.promotion.code, "VELVET10");
     assert.equal(state.quotes[0].status, "Reservada");
-    assert.equal(state.users.length, 1);
+    assert.equal(state.users.filter((u) => u.role === "cliente").length, 1);
     await page.evaluate(() =>
-      Promise.all(document.getAnimations().map((a) => a.finished)),
+      Promise.allSettled(
+        document
+          .getAnimations()
+          .filter((a) => a.effect.getTiming().iterations !== Infinity)
+          .map((a) => a.finished),
+      ),
     );
     for (const [id, file] of [
       ["experiencias", "experiencias"],
       ["paquetes", "paquetes"],
       ["personaliza", "personalizador"],
     ]) {
-      await page.locator("#" + id).scrollIntoViewIfNeeded();
+      await page.evaluate((id) => Sections.open(id), id);
       await page.screenshot({ path: path.resolve("qa/" + file + ".png") });
     }
     await page.setViewportSize({ width: 390, height: 844 });

@@ -17,6 +17,7 @@ const path = require("node:path");
       errors = [],
       remote = [];
     page.on("pageerror", (e) => errors.push(e.message));
+
     page.on("request", (r) => {
       if (
         !r.url().startsWith("http://127.0.0.1:4173") &&
@@ -25,19 +26,28 @@ const path = require("node:path");
         remote.push(r.url());
     });
     await page.goto("http://127.0.0.1:4173");
-    await page.waitForSelector(".experience-card");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
+    await page.waitForSelector(".experience-card", { state: "attached" });
+    await page.evaluate(() => Profiles.signIn("angie@demo.local"));
     await page.waitForFunction(() => {
       const v = document.getElementById("heroVideo");
       return v.readyState >= 2 && v.videoWidth > 0 && v.currentTime > 0;
     });
     await page.evaluate(() =>
-      Promise.all(document.getAnimations().map((a) => a.finished)),
+      Promise.allSettled(
+        document
+          .getAnimations()
+          .filter((a) => a.effect.getTiming().iterations !== Infinity)
+          .map((a) => a.finished),
+      ),
     );
     await page.screenshot({ path: path.resolve("qa/inicio-escritorio.png") });
     await page.locator(".theme-toggle").click();
     assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
     await page.screenshot({ path: path.resolve("qa/inicio-oscuro.png") });
     await page.locator(".theme-toggle").click();
+    await page.evaluate(() => Sections.open("experiencias"));
     await page.locator("#showAll").click();
     assert.equal(await page.locator(".experience-card").count(), 19);
     await page.locator('[data-group="Romance"]').click();
@@ -60,6 +70,8 @@ const path = require("node:path");
     assert.equal(q.total, 2835000);
     assert.equal(q.status, "Cotizada");
     await page.goto("http://127.0.0.1:4173/cuenta.html");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
     await page.locator('#loginForm [name="email"]').fill("qa@demo.local");
     await page.locator("#loginForm button").click();
     await page.locator("[data-reserve]").click();
@@ -95,6 +107,9 @@ const path = require("node:path");
     );
     assert.equal(data.quotes.at(-1).paid, q.total);
     await page.goto("http://127.0.0.1:4173");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
+    await page.evaluate(() => Sections.open("contacto"));
     await page.locator('#contactForm [name="name"]').fill("Cliente QA");
     await page.locator('#contactForm [name="email"]').fill("qa@demo.local");
     await page
@@ -102,16 +117,22 @@ const path = require("node:path");
       .fill("Quiero una decoración floral especial.");
     await page.locator("#contactForm button").click();
     await page.goto("http://127.0.0.1:4173/mensajes.html");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
     await page.locator("[data-reply]").first().click();
     await page
       .locator("#replyForm textarea")
       .fill("Claro, prepararemos una propuesta floral.");
     await page.locator("#replyForm button").click();
     await page.goto("http://127.0.0.1:4173/cuenta.html");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
     assert.ok(
       (await page.locator("body").innerText()).includes("Claro, prepararemos"),
     );
     await page.goto("http://127.0.0.1:4173/eventos.html");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
     await page.locator("[data-edit-event]").first().click();
     await page.locator('#eventEdit [name="date"]').fill(data.quotes[0].date);
     await page
@@ -134,6 +155,8 @@ const path = require("node:path");
       "configuracion",
     ]) {
       await page.goto(`http://127.0.0.1:4173/${route}.html`);
+      if (await page.locator("#welcomeDialog[open]").count())
+        await page.locator("#skipWelcome").click();
       await page.waitForSelector("#adminContent");
       assert.ok((await page.locator("#adminContent").innerText()).length > 20);
       if (route === "admin")
@@ -143,6 +166,9 @@ const path = require("node:path");
         });
     }
     await page.goto("http://127.0.0.1:4173");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
+    await page.evaluate(() => Sections.open("servicios"));
     await page.locator("#invitationPreview").click();
     await page.locator("#inviteForm button").click();
     await page.waitForSelector(".invitation");
@@ -150,14 +176,22 @@ const path = require("node:path");
     assert.ok(
       await page.locator('#quoteForm [name="extras"][value="0"]').isChecked(),
     );
+    await page.evaluate(() => Sections.close());
     await page.locator("[data-chat]").first().click();
     await page.locator("[data-suggestion]").first().click();
     assert.equal(await page.locator(".bubble").count(), 3);
     await page.locator(".modal-close").click();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("http://127.0.0.1:4173");
+    if (await page.locator("#welcomeDialog[open]").count())
+      await page.locator("#skipWelcome").click();
     await page.evaluate(() =>
-      Promise.all(document.getAnimations().map((a) => a.finished)),
+      Promise.allSettled(
+        document
+          .getAnimations()
+          .filter((a) => a.effect.getTiming().iterations !== Infinity)
+          .map((a) => a.finished),
+      ),
     );
     await page.screenshot({ path: path.resolve("qa/inicio-movil.png") });
     await page.locator(".mobile-toggle").click();
@@ -177,6 +211,8 @@ const path = require("node:path");
       "configuracion",
     ]) {
       await page.goto(`http://127.0.0.1:4173/${route}.html`);
+      if (await page.locator("#welcomeDialog[open]").count())
+        await page.locator("#skipWelcome").click();
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth > innerWidth + 1,
       );
@@ -185,6 +221,8 @@ const path = require("node:path");
     for (const width of [320, 768, 1024]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("http://127.0.0.1:4173");
+      if (await page.locator("#welcomeDialog[open]").count())
+        await page.locator("#skipWelcome").click();
       assert.equal(
         await page.evaluate(
           () => document.documentElement.scrollWidth > innerWidth + 1,
