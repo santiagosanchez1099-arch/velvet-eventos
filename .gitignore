@@ -8,3 +8,6 @@ node_modules/
 
 # Windows launcher is part of the distributable demo.
 !ABRIR-VELVET.bat
+
+# Generated shortcut to the port selected on this computer.
+ABRIR-ENLACE.html

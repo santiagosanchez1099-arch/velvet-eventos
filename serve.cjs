@@ -1,7 +1,15 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
+const { createHash } = require("node:crypto");
 const root = __dirname;
+const instance = createHash("sha256")
+  .update(
+    process.platform === "win32"
+      ? fs.realpathSync(root).toLowerCase()
+      : fs.realpathSync(root),
+  )
+  .digest("hex");
 const types = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -12,6 +20,7 @@ const types = {
 };
 const server = http.createServer((req, res) => {
   res.setHeader("X-Velvet-Demo", "1");
+  res.setHeader("X-Velvet-Instance", instance);
   let name;
   try {
     name = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
@@ -61,8 +70,7 @@ const server = http.createServer((req, res) => {
 });
 
 module.exports = server;
+server.velvetInstance = instance;
 if (require.main === module) {
-  server.listen(4173, "127.0.0.1", () =>
-    console.log("Local: http://127.0.0.1:4173"),
-  );
+  require("./tools/start-demo.cjs").start();
 }

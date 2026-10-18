@@ -11,7 +11,7 @@ SOLO LA PRIMERA VEZ
 2. Haz clic derecho sobre el ZIP recibido y elige "Extraer todo".
    Completa la extraccion. No abras la web desde dentro del ZIP.
 
-3. Entra a la carpeta extraida Velvet-Studio.
+3. Entra a la carpeta extraida donde esta ABRIR-VELVET.bat.
 
 4. Haz doble clic en ABRIR-VELVET.bat.
    Si Windows oculta las extensiones, puede aparecer como ABRIR-VELVET.
@@ -21,8 +21,10 @@ SOLO LA PRIMERA VEZ
 
 SI EL NAVEGADOR NO SE ABRE
 
-Abre Chrome, Edge o tu navegador y escribe esta direccion arriba:
-http://127.0.0.1:4173
+Abre Chrome, Edge o tu navegador y copia la direccion que muestra la ventana
+del lanzador. Normalmente sera http://127.0.0.1:4173, pero el numero puede
+cambiar si otro proyecto esta usando ese puerto. No tienes que cambiarlo
+manualmente: el lanzador busca uno disponible.
 
 PARA USARLA OTRO DIA
 
@@ -83,3 +85,21 @@ Cotizar y reservar o Mis reservas y pagos: cada opcion abre una ventana.
 Dentro puedes cambiar entre Planes, Cotizar y Mis reservas y pagos.
 Cierra con Cerrar, Escape o pulsando fuera de la ventana en computador.
 Los datos de tu cotizacion se conservan al cambiar de seccion.
+
+PARA LA EXPOSICION CON VARIOS PROYECTOS
+- Prepara el PC antes: Node.js instalado, navegador y ZIP extraido.
+- Ejecuta ABRIR-VELVET.bat y usa la direccion que abre automaticamente.
+- Si un puerto esta ocupado por otro proyecto, se busca otro sin cerrarlo.
+- Si esta misma carpeta ya esta funcionando, se abre esa misma instancia.
+- No cierres la ventana del servidor mientras demuestras la web.
+- No necesitas internet para los flujos simulados; Google Maps es opcional.
+- Prueba todo en el computador definitivo antes de la exposicion.
+- Cambiar de navegador o puerto muestra datos locales independientes.
+
+SI LA VENTANA DEL SERVIDOR ABRE PERO EL NAVEGADOR NO
+1. No cierres la ventana del servidor.
+2. Dentro de la misma carpeta, abre ABRIR-ENLACE.html con doble clic.
+   Este archivo se crea al iniciar y apunta al puerto seleccionado.
+3. Tambien puedes copiar la direccion que aparece en la ventana del servidor
+   y pegarla en Chrome o Edge. Usa el numero que aparece en tu ventana.
+4. Si cambias de puerto, vuelve a iniciar el lanzador para actualizar el enlace.

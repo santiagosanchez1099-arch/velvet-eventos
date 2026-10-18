@@ -19,7 +19,7 @@ Con Node.js instalado, desde esta carpeta:
 node serve.cjs
 ```
 
-Abre **http://127.0.0.1:4173**. Detén el servidor con `Ctrl+C`. Si tienes npm, también puedes usar `npm start` y `npm run check`.
+El navegador se abre con la dirección elegida. Se intenta **http://127.0.0.1:4173** y, si está ocupado, se elige otro puerto automáticamente. Copia la dirección que muestra la consola si necesitas abrirla manualmente. Detén el servidor con `Ctrl+C`. Si tienes npm, también puedes usar `npm start` y `npm run check`.
 
 Usa el servidor local para que todas las páginas compartan el mismo almacenamiento. Evita abrirlas directamente con `file://`.
 
@@ -167,3 +167,23 @@ El modal tiene título, cierre visible, navegación rápida entre **Planes**, **
 Los enlaces `#paquetes`, `#cliente`, `#personaliza`, `#fechaEvento` y el resto de secciones siguen funcionando al abrirlos directamente, después de la presentación de bienvenida. Atrás/Adelante del navegador recupera la ventana correspondiente. Las acciones del asistente abren también estas ventanas.
 
 Prueba específica: `node tools/verify-modals.cjs`, que comprueba las once secciones, selección de plan, datos conservados, reserva/pago, acceso y registro del cliente, navegación desde fotos/temáticas, Escape, historial, enlaces directos y cinco tamaños de pantalla. Las pruebas anteriores se adaptaron a abrir la sección antes de interactuar con ella.
+
+## Presentaciones con varios proyectos y puertos ocupados
+
+El lanzador (`ABRIR-VELVET.bat`, `node tools/start-demo.cjs`, `node serve.cjs` o `npm start`) intenta iniciar en 127.0.0.1:4173. Si el puerto está ocupado o no está permitido, intenta los nueve siguientes; si todos fallan, solicita al sistema operativo un puerto libre. Abre el navegador con el puerto realmente obtenido, sin que el usuario tenga que editar código o detener otros proyectos.
+
+Si encuentra esta misma copia de Velvet ya funcionando entre esos puertos, abre su dirección. Identifica la carpeta mediante una huella local en la cabecera `X-Velvet-Instance`; otra carpeta de Velvet o una aplicación distinta no se reutiliza. Una aplicación que no responde no bloquea indefinidamente el arranque. El puerto se reserva al iniciar el servidor, evitando el intervalo entre comprobar y utilizar un puerto. Nunca se cierran procesos ajenos. Una política del equipo que impida iniciar cualquier servidor local todavía puede impedir la ejecución.
+
+Para preparar el PC de exposición: instalar Node.js, disponer de Chrome/Edge u otro navegador actual, extraer completamente el ZIP y probar el lanzador antes de la presentación. No se necesitan Git, npm install ni conexión a internet para los flujos de la demo; el enlace opcional a Google Maps sí necesita internet. Mantener la ventana del servidor abierta mientras se presenta y usar la dirección que muestra, que puede diferir entre PCs.
+
+Los datos de localStorage pertenecen al navegador y al origen (dirección y puerto). Si se cambia de puerto, las cuentas y reservas guardadas en otro puerto no se trasladan; se muestran los ejemplos iniciales. Para conservar los datos de una sesión, mantener abierto el mismo servidor y volver a su misma dirección.
+
+Para pruebas o una preferencia explícita se puede establecer `VELVET_PORT` (1024–65535); `VELVET_NO_BROWSER=1` evita abrir el navegador. La prueba `node tools/verify-launcher.cjs` usa puertos aislados y comprueba inicio normal, reutilización, copia ajena, conflictos múltiples, servidor sin respuesta y puerto elegido por el sistema. No detiene la demo abierta en 4173.
+
+## Si Windows no abre el navegador
+
+El lanzador imprime siempre la URL del puerto activo. `tools/open-browser.cjs` solicita la apertura en Windows con `cmd.exe /d /c start` y, si ese comando falla, intenta `Start-Process` con PowerShell. Un fallo al abrir el navegador no detiene el servidor. Si se ha configurado `VELVET_NO_BROWSER=1`, se indica explícitamente que la apertura automática está desactivada.
+
+Cada inicio actualiza `ABRIR-ENLACE.html` en la misma carpeta. Si el navegador no apareció, se puede hacer doble clic en ese archivo: redirige al puerto realmente seleccionado e incluye un enlace visible como alternativa. El servidor debe permanecer abierto. El archivo se genera en el PC de destino y está excluido de Git y del ZIP, para no distribuir una dirección de otro equipo. Si la carpeta no permite escribirlo, la URL sigue disponible en la consola.
+
+No se puede confirmar que una ventana se haya mostrado solo porque Windows acepte la solicitud. Si no aparece, abre el HTML de enlace o pega la dirección impresa en Chrome/Edge. `node tools/verify-browser.cjs` comprueba los comandos, el segundo intento, el fallo controlado y la validación de URLs locales, sin abrir navegadores durante las pruebas automáticas.
